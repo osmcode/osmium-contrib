@@ -1,0 +1,4 @@
+
+A simple program to calculate the length of the road network (everything tagged
+highway=*) from the given OSM file.
+
