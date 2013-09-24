@@ -27,7 +27,7 @@ int main(int argc, char* argv[]) {
     }
 
     osmium::io::Reader reader(argv[1]);
-    osmium::io::Header header = reader.open();
+    reader.open(osmium::item_flags_type::node);
 
     NamesHandler names_handler;
 

@@ -57,7 +57,6 @@ public:
     }
 
     void after_nodes() {
-//        std::cerr << "max_count=" << m_max_count << "\n";
         gdImagePtr im = gdImageCreate(m_xsize, m_ysize);
 
         for (int i=0; i <= 255; ++i) {
@@ -115,7 +114,7 @@ int main(int argc, char* argv[]) {
     NodeDensityHandler handler(size, min, max);
 
     osmium::io::Reader reader(argv[1]);
-    osmium::io::Header header = reader.open();
+    reader.open(osmium::item_flags_type::node);
     reader.push(handler);
 }
 

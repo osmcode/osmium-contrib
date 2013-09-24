@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
     }
 
     osmium::io::Reader reader(argv[1]);
-    osmium::io::Header header = reader.open();
+    reader.open(osmium::item_flags_type::node | osmium::item_flags_type::way);
 
     index_type index;
     location_handler_type location_handler(index);
