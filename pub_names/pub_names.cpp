@@ -31,6 +31,6 @@ int main(int argc, char* argv[]) {
 
     NamesHandler names_handler;
 
-    reader.push(names_handler);
+    reader.apply(names_handler);
 }
 

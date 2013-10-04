@@ -115,6 +115,6 @@ int main(int argc, char* argv[]) {
 
     osmium::io::Reader reader(argv[1]);
     reader.open(osmium::item_flags_type::node);
-    reader.push(handler);
+    reader.apply(handler);
 }
 

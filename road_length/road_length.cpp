@@ -39,7 +39,7 @@ int main(int argc, char* argv[]) {
 
     RoadLengthHandler road_length_handler;
 
-    reader.push(location_handler, road_length_handler);
+    reader.apply(location_handler, road_length_handler);
 
     std::cout << "Length: " << road_length_handler.length / 1000 << " km\n";
 }
