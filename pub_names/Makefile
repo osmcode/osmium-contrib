@@ -24,7 +24,7 @@ endif
 CXXFLAGS_WARNINGS := -Wall -Wextra -pedantic -Wredundant-decls -Wdisabled-optimization -Wctor-dtor-privacy -Wnon-virtual-dtor -Woverloaded-virtual -Wsign-promo -Wold-style-cast
 
 LIB_EXPAT := -lexpat
-LIB_PBF   := -lz -lpthread -lprotobuf-lite -losmpbf
+LIB_PBF   := -pthread -lz -lprotobuf-lite -losmpbf
 
 PROGRAMS := pub_names
 
