@@ -18,7 +18,7 @@ BUILDING
 ========
 
 All programs can simply be compiled by calling "make" in their respective
-directories.
+directories. Calling "make" in the main directory will make all programs.
 
 This will work easiest if you have Osmium installed in your normal INCLUDE path
 or if the libosmium git repository is checked out in the same directory as the
