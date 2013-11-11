@@ -12,7 +12,7 @@ typedef osmium::index::map::SparseTable<osmium::unsigned_object_id_type, osmium:
 #include <osmium/handler/node_locations_for_ways.hpp>
 typedef osmium::handler::NodeLocationsForWays<index_type> location_handler_type;
 
-struct RoadLengthHandler : public osmium::handler::Handler<RoadLengthHandler> {
+struct RoadLengthHandler : public osmium::handler::Handler {
 
     double length = 0;
 
@@ -39,7 +39,7 @@ int main(int argc, char* argv[]) {
 
     RoadLengthHandler road_length_handler;
 
-    reader.apply(location_handler, road_length_handler);
+    osmium::handler::apply(reader, location_handler, road_length_handler);
 
     std::cout << "Length: " << road_length_handler.length / 1000 << " km\n";
 }

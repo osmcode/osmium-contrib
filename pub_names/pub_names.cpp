@@ -6,7 +6,7 @@
 #include <osmium/io/any_input.hpp>
 #include <osmium/handler.hpp>
 
-struct NamesHandler : public osmium::handler::Handler<NamesHandler> {
+struct NamesHandler : public osmium::handler::Handler {
 
     void node(const osmium::Node& node) {
         const char* amenity = node.tags().get_value_by_key("amenity");
@@ -31,6 +31,6 @@ int main(int argc, char* argv[]) {
 
     NamesHandler names_handler;
 
-    reader.apply(names_handler);
+    osmium::handler::apply(reader, names_handler);
 }
 

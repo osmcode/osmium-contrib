@@ -13,7 +13,7 @@
 
 typedef uint16_t node_count_type;
 
-class NodeDensityHandler : public osmium::handler::Handler<NodeDensityHandler> {
+class NodeDensityHandler : public osmium::handler::Handler {
 
     const int m_xsize;
     const int m_ysize;
@@ -115,6 +115,6 @@ int main(int argc, char* argv[]) {
 
     osmium::io::Reader reader(argv[1]);
     reader.open(osmium::item_flags_type::node);
-    reader.apply(handler);
+    osmium::handler::apply(reader, handler);
 }
 
