@@ -26,10 +26,9 @@ int main(int argc, char* argv[]) {
         exit(1);
     }
 
-    osmium::io::Reader reader(argv[1]);
-    reader.open(osmium::item_flags_type::node);
-
     NamesHandler names_handler;
+
+    osmium::io::Reader reader(argv[1], osmium::osm_entity::flags::node);
 
     osmium::handler::apply(reader, names_handler);
 }

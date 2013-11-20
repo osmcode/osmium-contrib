@@ -23,8 +23,12 @@ endif
 
 CXXFLAGS_WARNINGS := -Wall -Wextra -pedantic -Wredundant-decls -Wdisabled-optimization -Wctor-dtor-privacy -Wnon-virtual-dtor -Woverloaded-virtual -Wsign-promo -Wold-style-cast
 
-LIB_EXPAT := -lexpat
-LIB_PBF   := -pthread -lz -lprotobuf-lite -losmpbf
+LIB_EXPAT  := -lexpat
+LIB_PBF    := -pthread -lz -lprotobuf-lite -losmpbf
+LIB_GZIP   := -lz
+LIB_BZIP2  := -lbz2
+
+LIB_IO     := $(LIB_EXPAT) $(LIB_PBF) $(LIB_GZIP) $(LIB_BZIP2)
 
 PROGRAMS := road_length
 
@@ -33,7 +37,7 @@ PROGRAMS := road_length
 all: $(PROGRAMS)
 
 road_length: road_length.cpp
-	$(CXX) $(CXXFLAGS) $(CXXFLAGS_WARNINGS) -o $@ $< $(LDFLAGS) $(LIB_EXPAT) $(LIB_PBF)
+	$(CXX) $(CXXFLAGS) $(CXXFLAGS_WARNINGS) -o $@ $< $(LDFLAGS) $(LIB_IO)
 
 clean:
 	rm -f *.o core $(PROGRAMS)

@@ -23,9 +23,13 @@ endif
 
 CXXFLAGS_WARNINGS := -Wall -Wextra -pedantic -Wredundant-decls -Wdisabled-optimization -Wctor-dtor-privacy -Wnon-virtual-dtor -Woverloaded-virtual -Wsign-promo -Wold-style-cast
 
-LIB_EXPAT := -lexpat
-LIB_PBF   := -pthread -lz -lprotobuf-lite -losmpbf
-LIB_GD    := -lgd -lz -lm
+LIB_GD     := -lgd -lz -lm
+LIB_EXPAT  := -lexpat
+LIB_PBF    := -pthread -lz -lprotobuf-lite -losmpbf
+LIB_GZIP   := -lz
+LIB_BZIP2  := -lbz2
+
+LIB_IO     := $(LIB_EXPAT) $(LIB_PBF) $(LIB_GZIP) $(LIB_BZIP2)
 
 PROGRAMS := node_density
 
@@ -34,7 +38,7 @@ PROGRAMS := node_density
 all: $(PROGRAMS)
 
 node_density: node_density.cpp
-	$(CXX) $(CXXFLAGS) $(CXXFLAGS_WARNINGS) -o $@ $< $(LDFLAGS) $(LIB_EXPAT) $(LIB_PBF) $(LIB_GD)
+	$(CXX) $(CXXFLAGS) $(CXXFLAGS_WARNINGS) -o $@ $< $(LDFLAGS) $(LIB_IO) $(LIB_GD)
 
 clean:
 	rm -f *.o core $(PROGRAMS)

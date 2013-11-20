@@ -27,7 +27,7 @@ class NodeDensityHandler : public osmium::handler::Handler {
     std::unique_ptr<node_count_type[]> m_node_count;
 
     template <typename T>
-    constexpr T in_range(T min, T value, T max) {
+    static constexpr T in_range(T min, T value, T max) {
         return std::min(std::max(value, min), max);
     }
 
@@ -113,8 +113,8 @@ int main(int argc, char* argv[]) {
 
     NodeDensityHandler handler(size, min, max);
 
-    osmium::io::Reader reader(argv[1]);
-    reader.open(osmium::item_flags_type::node);
+    osmium::io::Reader reader(argv[1], osmium::osm_entity::flags::node);
+
     osmium::handler::apply(reader, handler);
 }
 
