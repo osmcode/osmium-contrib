@@ -5,6 +5,7 @@
 
 #include <osmium/io/any_input.hpp>
 #include <osmium/handler.hpp>
+#include <osmium/visitor.hpp>
 
 struct NamesHandler : public osmium::handler::Handler {
 
@@ -30,6 +31,6 @@ int main(int argc, char* argv[]) {
 
     osmium::io::Reader reader(argv[1], osmium::osm_entity::flags::node);
 
-    osmium::handler::apply(reader, names_handler);
+    osmium::apply(reader, names_handler);
 }
 

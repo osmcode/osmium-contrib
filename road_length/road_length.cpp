@@ -5,6 +5,7 @@
 
 #include <osmium/io/any_input.hpp>
 #include <osmium/geom/haversine.hpp>
+#include <osmium/visitor.hpp>
 
 #include <osmium/index/map/sparse_table.hpp>
 typedef osmium::index::map::SparseTable<osmium::unsigned_object_id_type, osmium::Location> index_type;
@@ -38,7 +39,7 @@ int main(int argc, char* argv[]) {
 
     RoadLengthHandler road_length_handler;
 
-    osmium::handler::apply(reader, location_handler, road_length_handler);
+    osmium::apply(reader, location_handler, road_length_handler);
 
     std::cout << "Length: " << road_length_handler.length / 1000 << " km\n";
 }

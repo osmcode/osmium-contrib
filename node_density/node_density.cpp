@@ -2,14 +2,15 @@
 // The code in this file is released into the Public Domain.
 
 #include <algorithm>
+#include <cstdio>
 #include <iostream>
 #include <limits>
-#include <cstdio>
 
 #include <gd.h>
 
 #include <osmium/io/any_input.hpp>
 #include <osmium/handler.hpp>
+#include <osmium/visitor.hpp>
 
 typedef uint16_t node_count_type;
 
@@ -115,6 +116,6 @@ int main(int argc, char* argv[]) {
 
     osmium::io::Reader reader(argv[1], osmium::osm_entity::flags::node);
 
-    osmium::handler::apply(reader, handler);
+    osmium::apply(reader, handler);
 }
 
