@@ -19,6 +19,23 @@ struct NamesHandler : public osmium::handler::Handler {
         }
     }
 
+    // Many pubs are mapped as a way (often tagged as building=yes too).
+    // Potentially a pub could be mapped as just building=pub - but this is exceedingly rare, so it is not tested here
+    void way(const osmium::Way& way) {
+        const char* amenity = way.tags().get_value_by_key("amenity");
+        if (amenity && !strcmp(amenity, "pub")) {
+            // For such buildings one may want to confirm the way is closed before doing more processing eg:
+            //if (!way.is_closed()) {
+            //  return;
+            //}
+            // However for just listing names, the above check is not really necessary
+            const char* name = way.tags().get_value_by_key("name");
+            if (name) {
+                std::cout << name << std::endl;
+            }
+        }
+    }
+
 };
 
 int main(int argc, char* argv[]) {
@@ -29,7 +46,7 @@ int main(int argc, char* argv[]) {
 
     NamesHandler names_handler;
 
-    osmium::io::Reader reader(argv[1], osmium::osm_entity::flags::node);
+    osmium::io::Reader reader(argv[1], osmium::osm_entity::flags::node | osmium::osm_entity::flags::way);
 
     osmium::apply(reader, names_handler);
 }
