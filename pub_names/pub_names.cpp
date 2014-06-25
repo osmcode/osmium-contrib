@@ -7,16 +7,26 @@
 #include <osmium/handler.hpp>
 #include <osmium/visitor.hpp>
 
-struct NamesHandler : public osmium::handler::Handler {
+class NamesHandler : public osmium::handler::Handler {
 
-    void node(const osmium::Node& node) {
-        const char* amenity = node.tags().get_value_by_key("amenity");
+    void output_pubs(const osmium::OSMObject& object) {
+        const char* amenity = object.tags()["amenity"];
         if (amenity && !strcmp(amenity, "pub")) {
-            const char* name = node.tags().get_value_by_key("name");
+            const char* name = object.tags()["name"];
             if (name) {
                 std::cout << name << std::endl;
             }
         }
+    }
+
+public:
+
+    void node(const osmium::Node& node) {
+        output_pubs(node);
+    }
+
+    void way(const osmium::Way& way) {
+        output_pubs(way);
     }
 
 };
@@ -29,7 +39,7 @@ int main(int argc, char* argv[]) {
 
     NamesHandler names_handler;
 
-    osmium::io::Reader reader(argv[1], osmium::osm_entity_bits::node);
+    osmium::io::Reader reader(argv[1], osmium::osm_entity_bits::node | osmium::osm_entity_bits::way);
 
     osmium::apply(reader, names_handler);
 }
