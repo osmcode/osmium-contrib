@@ -18,7 +18,7 @@ struct RoadLengthHandler : public osmium::handler::Handler {
     double length = 0;
 
     void way(const osmium::Way& way) {
-        const char* highway = way.tags().get_value_by_key("highway");
+        const char* highway = way.tags()["highway"];
         if (highway) {
             length += osmium::geom::haversine::distance(way.nodes());
         }

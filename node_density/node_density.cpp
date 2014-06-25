@@ -46,9 +46,9 @@ public:
     }
 
     void node(const osmium::Node& node) {
-        int x = in_range(0, static_cast<int>((180 + node.location().lon()) * m_factor), m_xsize - 1);
-        int y = in_range(0, static_cast<int>(( 90 - node.location().lat()) * m_factor), m_ysize - 1);
-        int n = y * m_xsize + x;
+        const int x = in_range(0, static_cast<int>((180 + node.location().lon()) * m_factor), m_xsize - 1);
+        const int y = in_range(0, static_cast<int>(( 90 - node.location().lat()) * m_factor), m_ysize - 1);
+        const int n = y * m_xsize + x;
         if (m_node_count[n] < std::numeric_limits<node_count_type>::max() - 1) {
             ++m_node_count[n];
         }
