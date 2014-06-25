@@ -57,7 +57,7 @@ public:
         }
     }
 
-    void after_nodes() {
+    ~NodeDensityHandler() {
         gdImagePtr im = gdImageCreate(m_xsize, m_ysize);
 
         for (int i=0; i <= 255; ++i) {
@@ -114,7 +114,7 @@ int main(int argc, char* argv[]) {
 
     NodeDensityHandler handler(size, min, max);
 
-    osmium::io::Reader reader(argv[1], osmium::osm_entity::flags::node);
+    osmium::io::Reader reader(argv[1], osmium::osm_entity_bits::node);
 
     osmium::apply(reader, handler);
 }

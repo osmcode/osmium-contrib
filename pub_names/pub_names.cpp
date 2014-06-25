@@ -29,7 +29,7 @@ int main(int argc, char* argv[]) {
 
     NamesHandler names_handler;
 
-    osmium::io::Reader reader(argv[1], osmium::osm_entity::flags::node);
+    osmium::io::Reader reader(argv[1], osmium::osm_entity_bits::node);
 
     osmium::apply(reader, names_handler);
 }

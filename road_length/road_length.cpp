@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
         exit(1);
     }
 
-    osmium::io::Reader reader(argv[1], osmium::osm_entity::flags::node | osmium::osm_entity::flags::way);
+    osmium::io::Reader reader(argv[1], osmium::osm_entity_bits::node | osmium::osm_entity_bits::way);
 
     index_type index;
     location_handler_type location_handler(index);

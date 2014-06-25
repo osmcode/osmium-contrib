@@ -5,7 +5,7 @@
 #include <string>
 
 #include <osmium/area/assembler.hpp>
-#include <osmium/area/collector.hpp>
+#include <osmium/area/multipolygon_collector.hpp>
 #include <osmium/geom/wkt.hpp>
 #include <osmium/handler.hpp>
 #include <osmium/handler/node_locations_for_ways.hpp>
@@ -46,9 +46,8 @@ int main(int argc, char* argv[]) {
 
     std::string input_filename {argv[1]};
 
-    typedef osmium::area::Assembler area_assembler_type;
-    area_assembler_type assembler;
-    osmium::area::Collector<area_assembler_type> collector(assembler);
+    osmium::area::Assembler::config_type assembler_config;
+    osmium::area::MultipolygonCollector<osmium::area::Assembler> collector(assembler_config);
 
     std::cerr << "Pass 1...\n";
     osmium::io::Reader reader1(input_filename);
@@ -62,11 +61,10 @@ int main(int argc, char* argv[]) {
     std::cerr << "Pass 2...\n";
     ExportToWKTHandler export_handler;
     osmium::io::Reader reader2(input_filename);
-    osmium::apply(reader2, location_handler, export_handler, collector.handler());
-    reader2.close();
+    osmium::apply(reader2, location_handler, export_handler, collector.handler([&export_handler](const osmium::memory::Buffer& buffer) {
+        osmium::apply(buffer, export_handler);
+    }));
     std::cerr << "Pass 2 done\n";
-
-    osmium::apply(collector, export_handler);
 
     google::protobuf::ShutdownProtobufLibrary();
 
