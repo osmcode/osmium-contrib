@@ -25,15 +25,23 @@ class ExportToWKTHandler : public osmium::handler::Handler {
 public:
 
     void node(const osmium::Node& node) {
-        std::cout << m_factory.create_point(node) << "\n";
+        std::cout << 'n' << node.id() << ' ' << m_factory.create_point(node) << "\n";
     }
 
     void way(const osmium::Way& way) {
-        std::cout << m_factory.create_linestring(way) << "\n";
+        try {
+            std::cout << 'w' << way.id() << ' ' << m_factory.create_linestring(way) << "\n";
+        } catch (osmium::geometry_error&) {
+            // ignore broken geometries (such as ways with only a single node)
+        }
     }
 
     void area(const osmium::Area& area) {
-        std::cout << m_factory.create_multipolygon(area) << "\n";
+        try {
+            std::cout << 'a' << area.id() << ' ' << m_factory.create_multipolygon(area) << "\n";
+        } catch (osmium::geometry_error&) {
+            // ignore broken geometries (such as illegal multipolygons)
+        }
     }
 
 }; // class ExportToWKTHandler
