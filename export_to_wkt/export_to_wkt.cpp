@@ -20,7 +20,7 @@ typedef osmium::handler::NodeLocationsForWays<index_type, index_type> location_h
 
 class ExportToWKTHandler : public osmium::handler::Handler {
 
-    osmium::geom::WKTFactory m_factory;
+    osmium::geom::WKTFactory<> m_factory;
 
 public:
 
