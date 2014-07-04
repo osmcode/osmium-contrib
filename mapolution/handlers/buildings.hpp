@@ -16,6 +16,9 @@ public:
 
     ~BuildingsHandler() {
         m_layer.CommitTransaction();
+        if (m_layer.get()->GetFeatureCount() == 0) {
+            std::cerr << "WARNING: No features in layer '" << m_layer.get()->GetName() << "'.\n";
+        }
     }
 
     void area(const osmium::Area& area) {
