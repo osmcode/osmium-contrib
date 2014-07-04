@@ -3,26 +3,26 @@
 
 class BuildingsHandler : public GeomHandler {
 
-    ogrcpp::Layer m_area_layer;
+    ogrcpp::Layer m_layer;
 
 public:
 
     BuildingsHandler(factory_type& factory, ogrcpp::DataSource& ds, const std::string& date) :
         GeomHandler(factory, ds),
-        m_area_layer(data_source(), "buildings_" + date, wkbMultiPolygon) {
-        m_area_layer.add_field("id", OFTInteger, 10);
-        m_area_layer.StartTransaction();
+        m_layer(data_source(), "buildings_" + date, wkbMultiPolygon) {
+        m_layer.add_field("id", OFTInteger, 10);
+        m_layer.StartTransaction();
     }
 
     ~BuildingsHandler() {
-        m_area_layer.CommitTransaction();
+        m_layer.CommitTransaction();
     }
 
     void area(const osmium::Area& area) {
         try {
             const char* building = area.tags()["building"];
             if (building) {
-                ogrcpp::Feature f(m_area_layer, create_multipolygon(area));
+                ogrcpp::Feature f(m_layer, create_multipolygon(area));
                 f.set_field("id", static_cast<int>(area.id()));
                 f.add_to_layer();
             }
