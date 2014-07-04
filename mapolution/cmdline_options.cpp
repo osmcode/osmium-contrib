@@ -36,8 +36,7 @@ Options::Options(int argc, char* argv[]) {
             ("crs,c", po::value<int>(), "EPSG code of Coordinate Reference System")
             ("start-time,s", po::value<std::string>(), "Start time (yyyy-mm-dd)")
             ("end-time,e", po::value<std::string>(), "End time (yyyy-mm-dd)")
-            ("time-step,S", po::value<int>(), "Time step in days")
-//            ("overwrite,O", "Allow existing output file to be overwritten")
+            ("time-step,S", po::value<int>(), "Time step in days (default: 7 days)")
         ;
 
         po::options_description hidden("Hidden options");

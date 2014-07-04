@@ -24,7 +24,7 @@ struct Options {
 
     osmium::Timestamp start_time;
     osmium::Timestamp end_time;
-    int time_step = 1;
+    int time_step = 7; // default is 7 days == one week
 
     Options(int argc, char* argv[]);
 
