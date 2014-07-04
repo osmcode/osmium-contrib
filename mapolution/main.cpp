@@ -1,6 +1,10 @@
 
+#include <cerrno>
 #include <numeric>
 #include <fstream>
+
+#include <sys/types.h>
+#include <dirent.h>
 
 #include <osmium/area/assembler.hpp>
 #include <osmium/area/multipolygon_collector.hpp>
@@ -118,6 +122,30 @@ tspair min_max_timestamp(TIter begin, TIter end) {
     });
 }
 
+void check_and_create_directory(const std::string& directory) {
+    DIR* dir = opendir(directory.c_str());
+    if (!dir) {
+        if (errno == ENOENT) {
+            if (mkdir(directory.c_str(), 0777) == 0) {
+                return;
+            }
+            std::cerr << "Error creating output directory '" << directory << "': " << strerror(errno) << ".\n";
+            std::cerr << "Mapolution will create at most one directory level for you.\n";
+            exit(return_code::fatal);
+        }
+        std::cerr << "Error accessing output directory '" << directory << "': " << strerror(errno) << ".\n";
+        exit(return_code::fatal);
+    }
+    int num_entries=0;
+    while (readdir(dir) != nullptr) {
+        ++num_entries;
+    }
+    if (num_entries != 2) { // empty directory contains just . and .. entries
+        std::cerr << "Output directory '" << directory << "' is not empty.\n";
+        exit(return_code::fatal);
+    }
+}
+
 int main(int argc, char* argv[]) {
     Options options(argc, argv);
 
@@ -141,6 +169,8 @@ int main(int argc, char* argv[]) {
         options.vout << "Your end time is before the start time. Switching them around.\n";
         std::swap(options.start_time, options.end_time);
     }
+
+    check_and_create_directory(options.output_directory);
 
     options.vout << "Reading input file into memory...\n";
     osmium::io::File file(options.input_filename, options.input_format);
