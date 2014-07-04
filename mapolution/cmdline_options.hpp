@@ -6,6 +6,12 @@
 #include <osmium/osm/timestamp.hpp>
 #include <osmium/util/verbose_output.hpp>
 
+enum return_code : int {
+    okay  = 0,
+    error = 1,
+    fatal = 2
+};
+
 struct Options {
 
     osmium::util::VerboseOutput vout {false};

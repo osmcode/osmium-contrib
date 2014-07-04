@@ -6,8 +6,20 @@
 namespace po = boost::program_options;
 
 osmium::Timestamp Options::parse_time(std::string t) {
-    t.append("T00:00:00Z");
-    return osmium::Timestamp(t.c_str());
+    try {
+        t.append("T00:00:00Z");
+        osmium::Timestamp ts(t.c_str());
+
+        if (ts < osmium::Timestamp("2005-01-01T00:00:00Z")) {
+            std::cerr << "Dates before 2005 don't make sense, because OSM didn't exist then.\n";
+            exit(return_code::fatal);
+        }
+
+        return ts;
+    } catch (std::invalid_argument&) {
+        std::cerr << "Can't understand the date, format should be YYYY-MM-DD.\n";
+        exit(return_code::fatal);
+    }
 }
 
 Options::Options(int argc, char* argv[]) {
@@ -88,7 +100,7 @@ Options::Options(int argc, char* argv[]) {
 
     } catch (boost::program_options::error& e) {
         std::cerr << "Error parsing command line: " << e.what() << std::endl;
-        exit(2);
+        exit(return_code::fatal);
     }
 }
 

@@ -190,5 +190,7 @@ int main(int argc, char* argv[]) {
     options.vout << "Done.\n";
 
     google::protobuf::ShutdownProtobufLibrary();
+
+    return return_code::okay;
 }
 
