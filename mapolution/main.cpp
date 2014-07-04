@@ -52,6 +52,7 @@ OGREnvelope extract(
             }
         });
     }
+    options.vout << "  Done. Filtered data needs " << (fbuffer.committed() / (1024 * 1024)) << " MBytes.\n";
 
     // relations
     osmium::memory::Buffer rbuffer(1024*1024*10, osmium::memory::Buffer::auto_grow::yes);
