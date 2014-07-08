@@ -51,7 +51,7 @@ public:
     NodeDensityHandler(const Options& options, const osmium::Box& box) :
         m_options(options),
         m_box(box),
-        m_projection(options.epsg),
+        m_projection(options.srs),
         m_width(options.width),
         m_height(options.height),
         m_bottom_left(m_projection(box.bottom_left())),
@@ -135,16 +135,19 @@ int main(int argc, char* argv[]) {
     Options options(argc, argv);
 
     options.vout << "Options from command line or defaults:\n";
-    options.vout << "  Input file:                  " << options.input_filename << "\n";
+    options.vout << "  Input file:               " << options.input_filename << "\n";
     if (!options.input_format.empty()) {
-        options.vout << "  Input format:                " << options.input_format << "\n";
+        options.vout << "  Input format:             " << options.input_format << "\n";
     }
-    options.vout << "  Coordinate Reference System: " << options.epsg << "\n";
-    options.vout << "  Output file:                 " << options.output_filename << "\n";
-    options.vout << "  Compression:                 " << options.compression_format << "\n";
-    options.vout << "  Pixel width:                 " << options.width << "\n";
-    options.vout << "  Pixel height:                " << options.height << "\n";
-    options.vout << "  Build overviews:             " << (options.build_overview ? "YES" : "NO") << "\n";
+    if (options.epsg > 0) {
+        options.vout << "  EPSG code for SRS:        " << options.epsg << "\n";
+    }
+    options.vout << "  Spatial reference system: " << options.srs << "\n";
+    options.vout << "  Output file:              " << options.output_filename << "\n";
+    options.vout << "  Compression:              " << options.compression_format << "\n";
+    options.vout << "  Pixel width:              " << options.width << "\n";
+    options.vout << "  Pixel height:             " << options.height << "\n";
+    options.vout << "  Build overviews:          " << (options.build_overview ? "YES" : "NO") << "\n";
 
     osmium::Box bounding_box;
 

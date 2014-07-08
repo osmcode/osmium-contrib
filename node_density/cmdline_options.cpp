@@ -15,7 +15,8 @@ Options::Options(int argc, char* argv[]) {
             ("quiet,q", "Set quiet mode")
             ("output,o", po::value<std::string>(), "Output file")
             ("input-format,F", po::value<std::string>(), "Format of input file")
-            ("crs,c", po::value<int>(), "EPSG code of Coordinate Reference System")
+            ("epsg,e", po::value<int>(), "EPSG code of spatial reference system (default: 4326)")
+            ("srs,s", po::value<std::string>(), "Spatial reference system in proj format")
             ("width,W", po::value<size_t>(), "Pixel with of resulting image")
             ("height,H", po::value<size_t>(), "Pixel height of resulting image")
             ("compression", po::value<std::string>(), "Compression format ('NONE', 'DEFLATE', or 'LZW' (default))")
@@ -60,8 +61,19 @@ Options::Options(int argc, char* argv[]) {
             input_format = vm["input-format"].as<std::string>();
         }
 
-        if (vm.count("crs")) {
-            epsg = vm["crs"].as<int>();
+        if (vm.count("srs") && vm.count("epsg")) {
+            std::cerr << "Use at most one of the options --epsg,-e and --srs,-s\n";
+            exit(return_code::fatal);
+        }
+
+        if (vm.count("srs")) {
+            srs = vm["srs"].as<std::string>();
+            epsg = -1;
+        }
+
+        if (vm.count("epsg")) {
+            epsg = vm["epsg"].as<int>();
+            srs = "+init=epsg:" + std::to_string(epsg);
         }
 
         if (vm.count("width")) {

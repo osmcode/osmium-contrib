@@ -21,6 +21,7 @@ struct Options {
     std::string input_format;
     std::string compression_format {"LZW"};
     bool build_overview = false;
+    std::string srs;
     int epsg = 4326;
     size_t width = 1024;
     size_t height = 512;
