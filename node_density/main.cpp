@@ -15,9 +15,13 @@
 #include <osmium/handler.hpp>
 #include <osmium/visitor.hpp>
 
+#include "cmdline_options.hpp"
+
 typedef uint32_t node_count_type;
 
 class NodeDensityHandler : public osmium::handler::Handler {
+
+    const std::string m_filename;
 
     const int m_xsize;
     const int m_ysize;
@@ -32,9 +36,10 @@ class NodeDensityHandler : public osmium::handler::Handler {
 
 public:
 
-    NodeDensityHandler(int xsize, int ysize) :
-        m_xsize(xsize),
-        m_ysize(ysize),
+    NodeDensityHandler(const Options& options) :
+        m_filename(options.output_filename),
+        m_xsize(options.width),
+        m_ysize(options.height),
         m_factor(static_cast<double>(m_ysize) / 180),
         m_node_count(new node_count_type[m_xsize * m_ysize]) {
     }
@@ -60,8 +65,7 @@ public:
             "TILED=YES",
             nullptr
         };
-        std::string filename = "out.tiff";
-        GDALDataset* dataset = driver->Create(filename.c_str(), m_xsize, m_ysize, 1, GDT_UInt32, const_cast<char**>(options));
+        GDALDataset* dataset = driver->Create(m_filename.c_str(), m_xsize, m_ysize, 1, GDT_UInt32, const_cast<char**>(options));
         if (!dataset) {
             std::runtime_error("can't create dataset\n");
         }
@@ -93,25 +97,26 @@ public:
 }; // class NodeDensityHandler
 
 int main(int argc, char* argv[]) {
-    if (argc < 2 || argc > 5) {
-        std::cerr << "Usage: " << argv[0] << " OSMFILE [SIZE]]\n\n";
-        std::cerr << "  OSMFILE - OSM file of any type.\n";
-        std::cerr << "  SIZE    - Y-size of resulting image (X-size will be double).\n";
-        std::cerr << "Output will be a GeoTIFF file called 'out.tif'.\n";
-        exit(1);
+    Options options(argc, argv);
+
+    options.vout << "Options from command line or defaults:\n";
+    options.vout << "  Input file:                  " << options.input_filename << "\n";
+    if (!options.input_format.empty()) {
+        options.vout << "  Input format:                " << options.input_format << "\n";
     }
+    options.vout << "  Coordinate Reference System: " << options.epsg << "\n";
+    options.vout << "  Output file:                 " << options.output_filename << "\n";
+    options.vout << "  Pixel width:                 " << options.width << "\n";
+    options.vout << "  Pixel height:                " << options.height << "\n";
 
-    int size = 512; // default image size: 1024x512
+    NodeDensityHandler handler(options);
 
-    if (argc >= 3) {
-        size = atoi(argv[2]);
-    }
+    osmium::io::File file(options.input_filename, options.input_format);
+    osmium::io::Reader reader(file, osmium::osm_entity_bits::node);
 
-    NodeDensityHandler handler(size*2, size);
-
-    osmium::io::Reader reader(argv[1], osmium::osm_entity_bits::node);
-
+    options.vout << "Counting nodes...\n";
     osmium::apply(reader, handler);
+    options.vout << "Done.\n";
 
     google::protobuf::ShutdownProtobufLibrary();
 }

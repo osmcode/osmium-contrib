@@ -32,6 +32,8 @@ LIB_IO     := $(LIB_EXPAT) $(LIB_PBF) $(LIB_GZIP) $(LIB_BZIP2)
 
 CFLAGS_GDAL := `gdal-config --cflags`
 LIB_GDAL    := `gdal-config --libs`
+LIB_PROJ    := -lproj
+LIB_PRGOPT  := -lboost_program_options
 
 PROGRAMS := node_density
 
@@ -39,8 +41,14 @@ PROGRAMS := node_density
 
 all: $(PROGRAMS)
 
-node_density: node_density.cpp
-	$(CXX) $(CXXFLAGS) $(CXXFLAGS_WARNINGS) $(CFLAGS_GDAL) -o $@ $< $(LDFLAGS) $(LIB_IO) $(LIB_GDAL)
+main.o: main.cpp cmdline_options.hpp
+	$(CXX) -c $(CXXFLAGS) $(CFLAGS_GDAL) $(CXXFLAGS_WARNINGS) -o $@ $<
+
+cmdline_options.o: cmdline_options.cpp cmdline_options.hpp
+	$(CXX) -c $(CXXFLAGS) $(CXXFLAGS_WARNINGS) -o $@ $<
+
+node_density: main.o cmdline_options.o
+	$(CXX) -o $@ $^ $(LDFLAGS) $(LIB_IO) $(LIB_GDAL) $(LIB_PROJ) $(LIB_PRGOPT)
 
 clean:
 	rm -f *.o core $(PROGRAMS)
