@@ -16,6 +16,8 @@
 #include <osmium/io/any_input.hpp>
 #include <osmium/handler.hpp>
 #include <osmium/visitor.hpp>
+#include <osmium/geom/mercator_projection.hpp>
+#include <osmium/geom/projection.hpp>
 
 #include "cmdline_options.hpp"
 
@@ -24,10 +26,18 @@ typedef uint32_t node_count_type;
 class NodeDensityHandler : public osmium::handler::Handler {
 
     const Options& m_options;
+    const osmium::Box m_box;
+
+    osmium::geom::Projection m_projection;
 
     const int m_width;
     const int m_height;
-    const double m_factor;
+
+    const osmium::geom::Coordinates m_bottom_left;
+    const osmium::geom::Coordinates m_top_right;
+
+    const double m_factor_x;
+    const double m_factor_y;
 
     std::unique_ptr<node_count_type[]> m_node_count;
 
@@ -38,19 +48,28 @@ class NodeDensityHandler : public osmium::handler::Handler {
 
 public:
 
-    NodeDensityHandler(const Options& options) :
+    NodeDensityHandler(const Options& options, const osmium::Box& box) :
         m_options(options),
+        m_box(box),
+        m_projection(options.epsg),
         m_width(options.width),
         m_height(options.height),
-        m_factor(static_cast<double>(m_height) / 180),
+        m_bottom_left(m_projection(box.bottom_left())),
+        m_top_right(m_projection(box.top_right())),
+        m_factor_x(m_width  / (m_top_right.x - m_bottom_left.x)),
+        m_factor_y(m_height / (m_top_right.y - m_bottom_left.y)),
         m_node_count(new node_count_type[m_width * m_height]) {
     }
 
     void node(const osmium::Node& node) {
-        const int x = in_range(0, static_cast<int>((180 + node.location().lon()) * m_factor), m_width - 1);
-        const int y = in_range(0, static_cast<int>(( 90 - node.location().lat()) * m_factor), m_height - 1);
-        const int n = y * m_width + x;
-        ++m_node_count[n];
+        if (m_box.contains(node.location())) {
+            osmium::geom::Coordinates c = m_projection(node.location());
+
+            const int x = in_range(0, static_cast<int>(( c.x - m_bottom_left.x) * m_factor_x), m_width - 1);
+            const int y = in_range(0, static_cast<int>((-c.y - m_bottom_left.y) * m_factor_y), m_height - 1);
+            const int n = y * m_width + x;
+            ++m_node_count[n];
+        }
     }
 
     void write_to_file() {
@@ -82,12 +101,12 @@ public:
         dataset->SetMetadataItem("TIFFTAG_COPYRIGHT", "Copyright OpenStreetMap contributors (http://www.openstreetmap.org/copyright), License: CC-BY-SA (http://creativecommons.org/licenses/by-sa/2.0/)");
         dataset->SetMetadataItem("TIFFTAG_SOFTWARE", "node_density");
 
-        double geo_transform[6] = {-180.0, 360.0/m_width, 0, 90.0, 0, -180.0/m_height};
+        double geo_transform[6] = {m_bottom_left.x, 1/m_factor_x, 0, m_top_right.y, 0, -1/m_factor_y};
         dataset->SetGeoTransform(geo_transform);
 
         {
             OGRSpatialReference srs;
-            srs.SetWellKnownGeogCS("WGS84");
+            srs.importFromProj4(m_projection.proj_string().c_str());
             char* wkt = nullptr;
             srs.exportToWkt(&wkt);
             dataset->SetProjection(wkt);
@@ -127,7 +146,17 @@ int main(int argc, char* argv[]) {
     options.vout << "  Pixel height:                " << options.height << "\n";
     options.vout << "  Build overviews:             " << (options.build_overview ? "YES" : "NO") << "\n";
 
-    NodeDensityHandler handler(options);
+    osmium::Box bounding_box;
+
+    if (options.epsg == 3857) {
+        bounding_box.extend(osmium::Location(-180.0, -osmium::geom::MERCATOR_MAX_LAT));
+        bounding_box.extend(osmium::Location( 180.0,  osmium::geom::MERCATOR_MAX_LAT));
+    } else {
+        bounding_box.extend(osmium::Location(-180.0, -90.0));
+        bounding_box.extend(osmium::Location( 180.0,  90.0));
+    }
+
+    NodeDensityHandler handler(options, bounding_box);
 
     osmium::io::File file(options.input_filename, options.input_format);
     osmium::io::Reader reader(file, osmium::osm_entity_bits::node);
