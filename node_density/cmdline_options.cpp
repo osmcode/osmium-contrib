@@ -18,6 +18,8 @@ Options::Options(int argc, char* argv[]) {
             ("crs,c", po::value<int>(), "EPSG code of Coordinate Reference System")
             ("width,W", po::value<size_t>(), "Pixel with of resulting image")
             ("height,H", po::value<size_t>(), "Pixel height of resulting image")
+            ("compression", po::value<std::string>(), "Compression format ('NONE', 'DEFLATE', or 'LZW' (default))")
+            ("build-overview", "Build overviews")
         ;
 
         po::options_description hidden("Hidden options");
@@ -68,6 +70,20 @@ Options::Options(int argc, char* argv[]) {
 
         if (vm.count("height")) {
             height = vm["height"].as<size_t>();
+        }
+
+        if (vm.count("build-overview")) {
+            build_overview = true;
+        }
+
+        if (vm.count("compression")) {
+            std::string c = vm["compression"].as<std::string>();
+            if (c == "NONE" || c == "LZW" || c == "DEFLATE") {
+                compression_format = c;
+            } else {
+                std::cerr << "Unknown compression format '" << c << "'\n";
+                exit(return_code::fatal);
+            }
         }
     } catch (boost::program_options::error& e) {
         std::cerr << "Error parsing command line: " << e.what() << std::endl;

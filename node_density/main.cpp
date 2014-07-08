@@ -2,6 +2,8 @@
 // The code in this file is released into the Public Domain.
 
 #include <algorithm>
+#include <cassert>
+#include <cmath>
 #include <cstdio>
 #include <iostream>
 #include <limits>
@@ -22,9 +24,11 @@ typedef uint32_t node_count_type;
 class NodeDensityHandler : public osmium::handler::Handler {
 
     const std::string m_filename;
+    const std::string m_compression_format;
+    bool m_build_overview;
 
-    const int m_xsize;
-    const int m_ysize;
+    const int m_width;
+    const int m_height;
     const double m_factor;
 
     std::unique_ptr<node_count_type[]> m_node_count;
@@ -38,43 +42,51 @@ public:
 
     NodeDensityHandler(const Options& options) :
         m_filename(options.output_filename),
-        m_xsize(options.width),
-        m_ysize(options.height),
-        m_factor(static_cast<double>(m_ysize) / 180),
-        m_node_count(new node_count_type[m_xsize * m_ysize]) {
+        m_compression_format(options.compression_format),
+        m_build_overview(options.build_overview),
+        m_width(options.width),
+        m_height(options.height),
+        m_factor(static_cast<double>(m_height) / 180),
+        m_node_count(new node_count_type[m_width * m_height]) {
     }
 
     void node(const osmium::Node& node) {
-        const int x = in_range(0, static_cast<int>((180 + node.location().lon()) * m_factor), m_xsize - 1);
-        const int y = in_range(0, static_cast<int>(( 90 - node.location().lat()) * m_factor), m_ysize - 1);
-        const int n = y * m_xsize + x;
+        const int x = in_range(0, static_cast<int>((180 + node.location().lon()) * m_factor), m_width - 1);
+        const int y = in_range(0, static_cast<int>(( 90 - node.location().lat()) * m_factor), m_height - 1);
+        const int n = y * m_width + x;
         ++m_node_count[n];
     }
 
     void flush() {
         GDALAllRegister();
 
-        const char* format = "GTiff";
-        GDALDriver* driver = GetGDALDriverManager()->GetDriverByName(format);
+        GDALDriver* driver = GetGDALDriverManager()->GetDriverByName("GTiff");
         if (!driver) {
-            std::runtime_error("can't get driver\n");
+            std::cerr << "Can't initalize GDAL GTiff driver.\n";
+            exit(return_code::fatal);
         }
 
-        const char* options[] = {
-            "COMPRESS=LZW",
-            "TILED=YES",
-            nullptr
-        };
-        GDALDataset* dataset = driver->Create(m_filename.c_str(), m_xsize, m_ysize, 1, GDT_UInt32, const_cast<char**>(options));
+        std::vector<std::string> options;
+        options.push_back("COMPRESS=" + m_compression_format);
+        options.push_back("TILED=YES");
+
+        auto dataset_options = std::unique_ptr<char*[]>(new char*[options.size()+1]);
+        std::transform(options.begin(), options.end(), dataset_options.get(), [&](const std::string& s) {
+            return const_cast<char*>(s.data());
+        });
+        dataset_options[options.size()] = nullptr;
+
+        GDALDataset* dataset = driver->Create(m_filename.c_str(), m_width, m_height, 1, GDT_UInt32, dataset_options.get());
         if (!dataset) {
-            std::runtime_error("can't create dataset\n");
+            std::cerr << "Can't create output file '" << m_filename <<"'.\n";
+            exit(return_code::error);
         }
 
         dataset->SetMetadataItem("TIFFTAG_IMAGEDESCRIPTION", "OpenStreetMap node density");
         dataset->SetMetadataItem("TIFFTAG_COPYRIGHT", "© OpenStreetMap contributors (http://www.openstreetmap.org/copyright), License: CC-BY-SA (http://creativecommons.org/licenses/by-sa/2.0/)");
         dataset->SetMetadataItem("TIFFTAG_SOFTWARE", "node_density");
 
-        double geo_transform[6] = {-180.0, 360.0/m_xsize, 0, 90.0, 0, -180.0/m_ysize};
+        double geo_transform[6] = {-180.0, 360.0/m_width, 0, 90.0, 0, -180.0/m_height};
         dataset->SetGeoTransform(geo_transform);
 
         {
@@ -87,8 +99,16 @@ public:
         }
 
         GDALRasterBand* band = dataset->GetRasterBand(1);
-        if (band->RasterIO(GF_Write, 0, 0, m_xsize, m_ysize, m_node_count.get(), m_xsize, m_ysize, GDT_UInt32, 0, 0) != CE_None) {
-            std::runtime_error("raster_io error");
+        assert(band);
+        if (band->RasterIO(GF_Write, 0, 0, m_width, m_height, m_node_count.get(), m_width, m_height, GDT_UInt32, 0, 0) != CE_None) {
+            std::cerr << "Error writing to output file '" << m_filename <<"'.\n";
+            exit(return_code::error);
+        }
+
+        if (m_build_overview) {
+            int num = std::min(static_cast<int>(std::log2(m_width / 256.0)), 8);
+            int overview_list[] = { 2, 4, 8, 16, 32, 64, 128, 256 };
+            dataset->BuildOverviews("AVERAGE", num, overview_list, 0, nullptr, nullptr, nullptr);
         }
 
         GDALClose(dataset);
@@ -106,8 +126,10 @@ int main(int argc, char* argv[]) {
     }
     options.vout << "  Coordinate Reference System: " << options.epsg << "\n";
     options.vout << "  Output file:                 " << options.output_filename << "\n";
+    options.vout << "  Compression:                 " << options.compression_format << "\n";
     options.vout << "  Pixel width:                 " << options.width << "\n";
     options.vout << "  Pixel height:                " << options.height << "\n";
+    options.vout << "  Build overviews:             " << (options.build_overview ? "YES" : "NO") << "\n";
 
     NodeDensityHandler handler(options);
 
