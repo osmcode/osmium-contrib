@@ -23,9 +23,7 @@ typedef uint32_t node_count_type;
 
 class NodeDensityHandler : public osmium::handler::Handler {
 
-    const std::string m_filename;
-    const std::string m_compression_format;
-    bool m_build_overview;
+    const Options& m_options;
 
     const int m_width;
     const int m_height;
@@ -41,9 +39,7 @@ class NodeDensityHandler : public osmium::handler::Handler {
 public:
 
     NodeDensityHandler(const Options& options) :
-        m_filename(options.output_filename),
-        m_compression_format(options.compression_format),
-        m_build_overview(options.build_overview),
+        m_options(options),
         m_width(options.width),
         m_height(options.height),
         m_factor(static_cast<double>(m_height) / 180),
@@ -57,7 +53,7 @@ public:
         ++m_node_count[n];
     }
 
-    void flush() {
+    void write_to_file() {
         GDALAllRegister();
 
         GDALDriver* driver = GetGDALDriverManager()->GetDriverByName("GTiff");
@@ -67,7 +63,7 @@ public:
         }
 
         std::vector<std::string> options;
-        options.push_back("COMPRESS=" + m_compression_format);
+        options.push_back("COMPRESS=" + m_options.compression_format);
         options.push_back("TILED=YES");
 
         auto dataset_options = std::unique_ptr<char*[]>(new char*[options.size()+1]);
@@ -76,14 +72,14 @@ public:
         });
         dataset_options[options.size()] = nullptr;
 
-        GDALDataset* dataset = driver->Create(m_filename.c_str(), m_width, m_height, 1, GDT_UInt32, dataset_options.get());
+        GDALDataset* dataset = driver->Create(m_options.output_filename.c_str(), m_width, m_height, 1, GDT_UInt32, dataset_options.get());
         if (!dataset) {
-            std::cerr << "Can't create output file '" << m_filename <<"'.\n";
+            std::cerr << "Can't create output file '" << m_options.output_filename <<"'.\n";
             exit(return_code::error);
         }
 
         dataset->SetMetadataItem("TIFFTAG_IMAGEDESCRIPTION", "OpenStreetMap node density");
-        dataset->SetMetadataItem("TIFFTAG_COPYRIGHT", "© OpenStreetMap contributors (http://www.openstreetmap.org/copyright), License: CC-BY-SA (http://creativecommons.org/licenses/by-sa/2.0/)");
+        dataset->SetMetadataItem("TIFFTAG_COPYRIGHT", "Copyright OpenStreetMap contributors (http://www.openstreetmap.org/copyright), License: CC-BY-SA (http://creativecommons.org/licenses/by-sa/2.0/)");
         dataset->SetMetadataItem("TIFFTAG_SOFTWARE", "node_density");
 
         double geo_transform[6] = {-180.0, 360.0/m_width, 0, 90.0, 0, -180.0/m_height};
@@ -101,11 +97,11 @@ public:
         GDALRasterBand* band = dataset->GetRasterBand(1);
         assert(band);
         if (band->RasterIO(GF_Write, 0, 0, m_width, m_height, m_node_count.get(), m_width, m_height, GDT_UInt32, 0, 0) != CE_None) {
-            std::cerr << "Error writing to output file '" << m_filename <<"'.\n";
+            std::cerr << "Error writing to output file '" << m_options.output_filename <<"'.\n";
             exit(return_code::error);
         }
 
-        if (m_build_overview) {
+        if (m_options.build_overview) {
             int num = std::min(static_cast<int>(std::log2(m_width / 256.0)), 8);
             int overview_list[] = { 2, 4, 8, 16, 32, 64, 128, 256 };
             dataset->BuildOverviews("AVERAGE", num, overview_list, 0, nullptr, nullptr, nullptr);
@@ -138,6 +134,10 @@ int main(int argc, char* argv[]) {
 
     options.vout << "Counting nodes...\n";
     osmium::apply(reader, handler);
+    options.vout << "Done.\n";
+
+    options.vout << "Writing image to output file...\n";
+    handler.write_to_file();
     options.vout << "Done.\n";
 
     google::protobuf::ShutdownProtobufLibrary();
