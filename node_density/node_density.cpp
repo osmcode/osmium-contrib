@@ -66,6 +66,10 @@ public:
             std::runtime_error("can't create dataset\n");
         }
 
+        dataset->SetMetadataItem("TIFFTAG_IMAGEDESCRIPTION", "OpenStreetMap node density");
+        dataset->SetMetadataItem("TIFFTAG_COPYRIGHT", "© OpenStreetMap contributors (http://www.openstreetmap.org/copyright), License: CC-BY-SA (http://creativecommons.org/licenses/by-sa/2.0/)");
+        dataset->SetMetadataItem("TIFFTAG_SOFTWARE", "node_density");
+
         double geo_transform[6] = {-180.0, 360.0/m_xsize, 0, 90.0, 0, -180.0/m_ysize};
         dataset->SetGeoTransform(geo_transform);
 
