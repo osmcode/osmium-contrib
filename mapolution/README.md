@@ -8,9 +8,9 @@ Show evolution of OSM map.
 You'll need libosmium (http://osmcode.org/libosmium) and its dependencies
 installed first.
 
-You'll need gdal library, more specifically the `gdal_rasterize` command.
+You'll need the gdal library, more specifically the `gdal_rasterize` command.
 
-## Build
+## Building
 
 Build with `make`. Set `HANDLER` environment variable before calling
 make to switch handlers. Available handlers are "BuildingsHandler",

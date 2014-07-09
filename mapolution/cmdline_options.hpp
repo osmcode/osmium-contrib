@@ -14,7 +14,7 @@ enum return_code : int {
 
 struct Options {
 
-    osmium::util::VerboseOutput vout {false};
+    osmium::util::VerboseOutput vout {true};
 
     std::string input_filename {"-"};
     std::string output_directory {"out"};
@@ -30,6 +30,6 @@ struct Options {
 
     osmium::Timestamp parse_time(std::string);
 
-}; // struct options
+}; // struct Options
 
 #endif // CMDLINE_OPTIONS_HPP

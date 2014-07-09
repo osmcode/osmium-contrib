@@ -29,7 +29,7 @@ Options::Options(int argc, char* argv[]) {
         po::options_description cmdline("Allowed options");
         cmdline.add_options()
             ("help,h", "Print this help message")
-            ("verbose,v", "Set verbose mode")
+            ("quiet,q", "Suppress verbose output messages")
             ("output,o", po::value<std::string>(), "Output directory")
             ("output-format,f", po::value<std::string>(), "OGR format of output files")
             ("input-format,F", po::value<std::string>(), "Format of input file")
@@ -61,8 +61,8 @@ Options::Options(int argc, char* argv[]) {
             exit(0);
         }
 
-        if (vm.count("verbose")) {
-            vout.verbose(true);
+        if (vm.count("quiet")) {
+            vout.verbose(false);
         }
 
         if (vm.count("output")) {
