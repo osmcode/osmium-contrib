@@ -133,6 +133,12 @@ public:
 int main(int argc, char* argv[]) {
     Options options(argc, argv);
 
+    if (options.input_filename == "-" && options.input_format.empty()) {
+        std::cerr << "When reading from STDIN you have to give the input format with --format, -f.\n";
+        std::cerr << "Use one of: 'pbf', 'osm' (uncompressed XML format), 'osm.bz2' (bz2-compressed XML).\n";
+        exit(return_code::fatal);
+    }
+
     if (options.epsg == 3857) {
         bool warning = false;
         if (options.box.bottom_left().lat() < -osmium::geom::MERCATOR_MAX_LAT) {
@@ -148,6 +154,7 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    options.vout << "Set to verbose output. (Suppress with --quiet, -q.)\n";
     options.vout << "Options from command line or defaults:\n";
     options.vout << "  Input file:               " << options.input_filename << "\n";
     if (!options.input_format.empty()) {
