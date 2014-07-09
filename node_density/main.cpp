@@ -8,10 +8,14 @@
 #include <iostream>
 #include <limits>
 
-#include <gdal_priv.h>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#pragma GCC diagnostic ignored "-Wredundant-decls"
 #include <cpl_conv.h>
 #include <cpl_string.h>
+#include <gdal_priv.h>
 #include <ogr_spatialref.h>
+#pragma GCC diagnostic pop
 
 #include <osmium/io/any_input.hpp>
 #include <osmium/handler.hpp>
