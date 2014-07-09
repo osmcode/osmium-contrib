@@ -56,9 +56,11 @@ result. Play around with the settings.
 
 If you have QGIS 2.4 or newer you can drag the `example.qlr` file onto your
 QGIS window. The `out.tif` file should be opened with some sample settings.
+(Currently this only works if qgis was started from the same directory the
+`example.qlr` and `out.tif` files are in.)
 
-To improve rendering speed in QGIS add overview images by calling `node_density`
-with `--build-overviews`.
+To improve rendering speed in QGIS for large files add overview images by
+calling `node_density` with `--build-overviews`.
 
 
 ### With GDAL

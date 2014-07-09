@@ -7,7 +7,7 @@
     <keywordList>
       <value></value>
     </keywordList>
-    <layername>planet</layername>
+    <layername>OSM node density</layername>
     <srs>
       <spatialrefsys>
         <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
@@ -28,15 +28,15 @@
       <noDataList bandNo="1" useSrcNoData="0"/>
     </noData>
     <pipe>
-      <rasterrenderer opacity="1" alphaBand="0" classificationMax="10000" classificationMinMaxOrigin="User" band="1" classificationMin="0" type="singlebandpseudocolor">
+      <rasterrenderer opacity="1" alphaBand="0" classificationMax="120000" classificationMinMaxOrigin="User" band="1" classificationMin="0" type="singlebandpseudocolor">
         <rasterTransparency/>
         <rastershader>
           <colorrampshader colorRampType="INTERPOLATED" clip="0">
-            <item alpha="255" value="0" label="0.000000" color="#000000"/>
+            <item alpha="255" value="0" label="0" color="#000000"/>
             <item alpha="255" value="1" label="1" color="#440000"/>
-            <item alpha="255" value="3000" label="3000.000000" color="#ff0000"/>
-            <item alpha="255" value="9000" label="8000" color="#ffff00"/>
-            <item alpha="255" value="120000" label="10000" color="#ffffff"/>
+            <item alpha="255" value="3000" label="3000" color="#ff0000"/>
+            <item alpha="255" value="12000" label="12000" color="#ffff00"/>
+            <item alpha="255" value="120000" label="120000" color="#ffffff"/>
           </colorrampshader>
         </rastershader>
       </rasterrenderer>
