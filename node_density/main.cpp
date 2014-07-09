@@ -49,6 +49,16 @@ class NodeDensityHandler : public osmium::handler::Handler {
         return std::min(std::max(value, min), max);
     }
 
+    void record_location(const osmium::Location& location) {
+        if (m_options.box.contains(location)) {
+            osmium::geom::Coordinates c = m_projection(location);
+            const int x = in_range(0, static_cast<int>((c.x - m_bottom_left.x) * m_factor_x), m_width - 1);
+            const int y = in_range(0, static_cast<int>((c.y - m_top_right.y) * m_factor_y), m_height - 1);
+            const int n = y * m_width + x;
+            ++m_node_count[n];
+        }
+    }
+
 public:
 
     NodeDensityHandler(Options& options) :
@@ -64,13 +74,7 @@ public:
     }
 
     void node(const osmium::Node& node) {
-        if (m_options.box.contains(node.location())) {
-            osmium::geom::Coordinates c = m_projection(node.location());
-            const int x = in_range(0, static_cast<int>((c.x - m_bottom_left.x) * m_factor_x), m_width - 1);
-            const int y = in_range(0, static_cast<int>((c.y - m_top_right.y) * m_factor_y), m_height - 1);
-            const int n = y * m_width + x;
-            ++m_node_count[n];
-        }
+        record_location(node.location());
     }
 
     void write_to_file() {
