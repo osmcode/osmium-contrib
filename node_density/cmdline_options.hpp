@@ -3,6 +3,7 @@
 
 #include <string>
 
+#include <osmium/osm/box.hpp>
 #include <osmium/osm/timestamp.hpp>
 #include <osmium/util/verbose_output.hpp>
 
@@ -21,10 +22,11 @@ struct Options {
     std::string input_format;
     std::string compression_format {"LZW"};
     bool build_overview = false;
-    std::string srs;
+    std::string srs {"+init=epsg:4326"};
     int epsg = 4326;
     size_t width = 1024;
     size_t height = 512;
+    osmium::Box box {-180, -90, 180, 90};
 
     Options(int argc, char* argv[]);
 

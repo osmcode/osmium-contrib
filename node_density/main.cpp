@@ -25,8 +25,7 @@ typedef uint32_t node_count_type;
 
 class NodeDensityHandler : public osmium::handler::Handler {
 
-    const Options& m_options;
-    const osmium::Box m_box;
+    Options& m_options;
 
     osmium::geom::Projection m_projection;
 
@@ -48,31 +47,31 @@ class NodeDensityHandler : public osmium::handler::Handler {
 
 public:
 
-    NodeDensityHandler(const Options& options, const osmium::Box& box) :
+    NodeDensityHandler(Options& options) :
         m_options(options),
-        m_box(box),
         m_projection(options.srs),
         m_width(options.width),
         m_height(options.height),
-        m_bottom_left(m_projection(box.bottom_left())),
-        m_top_right(m_projection(box.top_right())),
+        m_bottom_left(m_projection(options.box.bottom_left())),
+        m_top_right(m_projection(options.box.top_right())),
         m_factor_x(m_width  / (m_top_right.x - m_bottom_left.x)),
-        m_factor_y(m_height / (m_top_right.y - m_bottom_left.y)),
+        m_factor_y(- m_height / (m_top_right.y - m_bottom_left.y)),
         m_node_count(new node_count_type[m_width * m_height]) {
     }
 
     void node(const osmium::Node& node) {
-        if (m_box.contains(node.location())) {
+        if (m_options.box.contains(node.location())) {
             osmium::geom::Coordinates c = m_projection(node.location());
-
-            const int x = in_range(0, static_cast<int>(( c.x - m_bottom_left.x) * m_factor_x), m_width - 1);
-            const int y = in_range(0, static_cast<int>((-c.y - m_bottom_left.y) * m_factor_y), m_height - 1);
+            const int x = in_range(0, static_cast<int>((c.x - m_bottom_left.x) * m_factor_x), m_width - 1);
+            const int y = in_range(0, static_cast<int>((c.y - m_top_right.y) * m_factor_y), m_height - 1);
             const int n = y * m_width + x;
             ++m_node_count[n];
         }
     }
 
     void write_to_file() {
+        m_options.vout << "Maximum node count per pixel: " << *std::max_element(&m_node_count[0], &m_node_count[m_width * m_height]) << "\n";
+
         GDALAllRegister();
 
         GDALDriver* driver = GetGDALDriverManager()->GetDriverByName("GTiff");
@@ -101,7 +100,7 @@ public:
         dataset->SetMetadataItem("TIFFTAG_COPYRIGHT", "Copyright OpenStreetMap contributors (http://www.openstreetmap.org/copyright), License: CC-BY-SA (http://creativecommons.org/licenses/by-sa/2.0/)");
         dataset->SetMetadataItem("TIFFTAG_SOFTWARE", "node_density");
 
-        double geo_transform[6] = {m_bottom_left.x, 1/m_factor_x, 0, m_top_right.y, 0, -1/m_factor_y};
+        double geo_transform[6] = {m_bottom_left.x, 1/m_factor_x, 0, m_top_right.y, 0, 1/m_factor_y};
         dataset->SetGeoTransform(geo_transform);
 
         {
@@ -134,32 +133,38 @@ public:
 int main(int argc, char* argv[]) {
     Options options(argc, argv);
 
+    if (options.epsg == 3857) {
+        bool warning = false;
+        if (options.box.bottom_left().lat() < -osmium::geom::MERCATOR_MAX_LAT) {
+            options.box.bottom_left().lat(-osmium::geom::MERCATOR_MAX_LAT);
+            warning = true;
+        }
+        if (options.box.top_right().lat() > osmium::geom::MERCATOR_MAX_LAT) {
+            options.box.top_right().lat(osmium::geom::MERCATOR_MAX_LAT);
+            warning = true;
+        }
+        if (warning) {
+            std::cerr << "Warning: Reduced size of bounding box to valid area for Web Mercator (EPSG:3857).\n";
+        }
+    }
+
     options.vout << "Options from command line or defaults:\n";
     options.vout << "  Input file:               " << options.input_filename << "\n";
     if (!options.input_format.empty()) {
         options.vout << "  Input format:             " << options.input_format << "\n";
     }
+    options.vout << "  Output file:              " << options.output_filename << "\n";
     if (options.epsg > 0) {
         options.vout << "  EPSG code for SRS:        " << options.epsg << "\n";
     }
     options.vout << "  Spatial reference system: " << options.srs << "\n";
-    options.vout << "  Output file:              " << options.output_filename << "\n";
-    options.vout << "  Compression:              " << options.compression_format << "\n";
     options.vout << "  Pixel width:              " << options.width << "\n";
     options.vout << "  Pixel height:             " << options.height << "\n";
-    options.vout << "  Build overviews:          " << (options.build_overview ? "YES" : "NO") << "\n";
+    options.vout << "  Bounding box:             " << options.box << "\n";
+    options.vout << "  Compression:              " << options.compression_format << "\n";
+    options.vout << "  Build overviews:          " << (options.build_overview ? "yes" : "no") << "\n";
 
-    osmium::Box bounding_box;
-
-    if (options.epsg == 3857) {
-        bounding_box.extend(osmium::Location(-180.0, -osmium::geom::MERCATOR_MAX_LAT));
-        bounding_box.extend(osmium::Location( 180.0,  osmium::geom::MERCATOR_MAX_LAT));
-    } else {
-        bounding_box.extend(osmium::Location(-180.0, -90.0));
-        bounding_box.extend(osmium::Location( 180.0,  90.0));
-    }
-
-    NodeDensityHandler handler(options, bounding_box);
+    NodeDensityHandler handler(options);
 
     osmium::io::File file(options.input_filename, options.input_format);
     osmium::io::Reader reader(file, osmium::osm_entity_bits::node);

@@ -9,18 +9,22 @@ Options::Options(int argc, char* argv[]) {
     po::variables_map vm;
     
     try {
-        po::options_description cmdline("Allowed options");
+        po::options_description cmdline("Options");
         cmdline.add_options()
             ("help,h", "Print this help message")
-            ("quiet,q", "Set quiet mode")
-            ("output,o", po::value<std::string>(), "Output file")
-            ("input-format,F", po::value<std::string>(), "Format of input file")
+            ("quiet,q", "Suppress verbose output messages")
+            ("format,f", po::value<std::string>(), "Format of input file (default: autodetect)")
+            ("output,o", po::value<std::string>(), "Name of output image")
             ("epsg,e", po::value<int>(), "EPSG code of spatial reference system (default: 4326)")
             ("srs,s", po::value<std::string>(), "Spatial reference system in proj format")
-            ("width,W", po::value<size_t>(), "Pixel with of resulting image")
-            ("height,H", po::value<size_t>(), "Pixel height of resulting image")
-            ("compression", po::value<std::string>(), "Compression format ('NONE', 'DEFLATE', or 'LZW' (default))")
-            ("build-overview", "Build overviews")
+            ("width,W", po::value<size_t>(), "Pixel width of output image")
+            ("height,H", po::value<size_t>(), "Pixel height of output image")
+            ("left,x", po::value<double>(), "Left edge of bounding box (default: -180)")
+            ("right,X", po::value<double>(), "Right edge of bounding box (default: 180)")
+            ("bottom,y", po::value<double>(), "Bottom edge of bounding box (default: -90)")
+            ("top,Y", po::value<double>(), "Top edge of bounding box (default: 90)")
+            ("compression", po::value<std::string>(), "Compression format (NONE, DEFLATE, or LZW (default: LZW))")
+            ("build-overviews", "Build overview images")
         ;
 
         po::options_description hidden("Hidden options");
@@ -28,7 +32,7 @@ Options::Options(int argc, char* argv[]) {
             ("input-filename", po::value<std::string>(), "Input file")
         ;
 
-        po::options_description desc("Usage: node_density [OPTIONS] OSMFILE");
+        po::options_description desc("Usage: node_density [OPTIONS] OSMFILE\nCreate GeoTIFF with node density in OSM data");
         desc.add(cmdline);
 
         po::options_description all;
@@ -49,16 +53,16 @@ Options::Options(int argc, char* argv[]) {
             vout.verbose(false);
         }
 
-        if (vm.count("output")) {
-            output_filename = vm["output"].as<std::string>();
-        }
-
         if (vm.count("input-filename")) {
             input_filename = vm["input-filename"].as<std::string>();
         }
 
-        if (vm.count("input-format")) {
-            input_format = vm["input-format"].as<std::string>();
+        if (vm.count("format")) {
+            input_format = vm["format"].as<std::string>();
+        }
+
+        if (vm.count("output")) {
+            output_filename = vm["output"].as<std::string>();
         }
 
         if (vm.count("srs") && vm.count("epsg")) {
@@ -84,7 +88,23 @@ Options::Options(int argc, char* argv[]) {
             height = vm["height"].as<size_t>();
         }
 
-        if (vm.count("build-overview")) {
+        if (vm.count("top")) {
+            box.top_right().lat(vm["top"].as<double>());
+        }
+
+        if (vm.count("right")) {
+            box.top_right().lon(vm["right"].as<double>());
+        }
+
+        if (vm.count("bottom")) {
+            box.bottom_left().lat(vm["bottom"].as<double>());
+        }
+
+        if (vm.count("left")) {
+            box.bottom_left().lon(vm["left"].as<double>());
+        }
+
+        if (vm.count("build-overviews")) {
             build_overview = true;
         }
 
