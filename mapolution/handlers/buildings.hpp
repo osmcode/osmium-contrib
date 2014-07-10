@@ -7,9 +7,9 @@ class BuildingsHandler : public GeomHandler {
 
 public:
 
-    BuildingsHandler(factory_type& factory, ogrcpp::DataSource& ds, const std::string& date) :
+    BuildingsHandler(factory_type& factory, ogrcpp::Dataset& ds, const std::string& date) :
         GeomHandler(factory, ds),
-        m_layer(data_source(), "buildings_" + date, wkbMultiPolygon) {
+        m_layer(dataset(), "buildings_" + date, wkbMultiPolygon) {
         m_layer.add_field("id", OFTInteger, 10);
         m_layer.StartTransaction();
     }

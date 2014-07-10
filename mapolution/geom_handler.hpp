@@ -24,17 +24,17 @@ private:
     factory_type& m_factory;
     OGREnvelope m_envelope;
 
-    ogrcpp::DataSource& m_data_source;
+    ogrcpp::Dataset& m_dataset;
 
 public:
 
-    GeomHandler(factory_type& factory, ogrcpp::DataSource& data_source) :
+    GeomHandler(factory_type& factory, ogrcpp::Dataset& dataset) :
         m_factory(factory),
-        m_data_source(data_source) {
+        m_dataset(dataset) {
     }
 
-    ogrcpp::DataSource& data_source() const {
-        return m_data_source;
+    ogrcpp::Dataset& dataset() const {
+        return m_dataset;
     }
 
     OGREnvelope envelope() const {

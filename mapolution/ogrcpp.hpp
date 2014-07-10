@@ -7,7 +7,18 @@
 #include <string>
 #include <vector>
 
+#include <gdal_priv.h>
+#include <gdal_version.h>
+
 namespace ogrcpp {
+
+#if GDAL_VERSION_MAJOR >= 2
+    typedef GDALDriver gdal_driver_type;
+    typedef GDALDataset gdal_dataset_type;
+#else
+    typedef OGRSFDriver gdal_driver_type;
+    typedef OGRDataSource gdal_dataset_type;
+#endif
 
     namespace detail {
 
@@ -24,7 +35,7 @@ namespace ogrcpp {
 
         class Driver : private init_library {
 
-            OGRSFDriver* m_driver;
+            gdal_driver_type* m_driver;
 
         public:
 
@@ -36,7 +47,7 @@ namespace ogrcpp {
                 }
             }
 
-            OGRSFDriver& get() const {
+            gdal_driver_type& get() const {
                 return *m_driver;
             }
 
@@ -64,38 +75,46 @@ namespace ogrcpp {
 
     } // namespace detail
 
-    class DataSource {
+    class Dataset {
 
-        struct OGRDataSourceDeleter {
-            void operator()(OGRDataSource* ds) {
+        struct gdal_dataset_deleter {
+            void operator()(gdal_dataset_type* ds) {
+#if GDAL_VERSION_MAJOR >= 2
+                GDALClose(ds);
+#else
                 OGRDataSource::DestroyDataSource(ds);
+#endif
             }
         };
 
         detail::Options m_options;
-        std::unique_ptr<OGRDataSource, OGRDataSourceDeleter> m_data_source;
+        std::unique_ptr<gdal_dataset_type, gdal_dataset_deleter> m_dataset;
         OGRSpatialReference m_spatial_reference;
 
     public:
 
-        DataSource(const std::string& driver, const std::string& name, const std::string& proj, const std::vector<std::string>& options = {}) :
+        Dataset(const std::string& driver, const std::string& name, const std::string& proj, const std::vector<std::string>& options = {}) :
             m_options(options),
-            m_data_source(detail::Driver(driver).get().CreateDataSource(name.c_str(), m_options.get())) {
-            if (!m_data_source) {
+#if GDAL_VERSION_MAJOR >= 2
+            m_dataset(detail::Driver(driver).get().Create(name.c_str(), 0, 0, 0, GDT_Unknown, m_options.get())) {
+#else
+            m_dataset(detail::Driver(driver).get().CreateDataSource(name.c_str(), m_options.get())) {
+#endif
+            if (!m_dataset) {
                 throw std::runtime_error("creating data source '" + name + "' failed");
             }
             m_spatial_reference.importFromProj4(proj.c_str());
         }
 
-        OGRDataSource& get() const {
-            return *m_data_source;
+        gdal_dataset_type& get() const {
+            return *m_dataset;
         }
 
         OGRSpatialReference* spatial_reference() {
             return &m_spatial_reference;
         }
 
-    }; // class DataSource
+    }; // class Dataset
 
     class Layer {
 
@@ -103,8 +122,8 @@ namespace ogrcpp {
 
     public:
 
-        Layer(DataSource& data_source, const std::string& name, OGRwkbGeometryType type) :
-            m_layer(data_source.get().CreateLayer(name.c_str(), data_source.spatial_reference(), type)) {
+        Layer(Dataset& dataset, const std::string& name, OGRwkbGeometryType type) :
+            m_layer(dataset.get().CreateLayer(name.c_str(), dataset.spatial_reference(), type)) {
             if (!m_layer) {
                 throw std::runtime_error("layer creation failed");
             }

@@ -94,12 +94,12 @@ OGREnvelope extract(
         CPLSetConfigOption("OGR_SQLITE_CACHE", "512");
     }
 
-    ogrcpp::DataSource data_source(options.output_format, datasource_name, factory.proj_string(), datasource_options);
+    ogrcpp::Dataset dataset(options.output_format, datasource_name, factory.proj_string(), datasource_options);
 
 #ifdef HANDLER
-    HANDLER geom_handler(factory, data_source, date);
+    HANDLER geom_handler(factory, dataset, date);
 #else
-    BuildingsHandler geom_handler(factory, data_source, date);
+    BuildingsHandler geom_handler(factory, dataset, date);
 #endif
     osmium::apply(fbuffer.begin(), fbuffer.end(), location_handler, geom_handler, collector.handler([&geom_handler](const osmium::memory::Buffer& buffer) {
         osmium::apply(buffer, geom_handler);

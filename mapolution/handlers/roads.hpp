@@ -7,9 +7,9 @@ class RoadsHandler : public GeomHandler {
 
 public:
 
-    RoadsHandler(factory_type& factory, ogrcpp::DataSource& ds, const std::string& date) :
+    RoadsHandler(factory_type& factory, ogrcpp::Dataset& ds, const std::string& date) :
         GeomHandler(factory, ds),
-        m_layer(data_source(), "roads_" + date, wkbLineString) {
+        m_layer(dataset(), "roads_" + date, wkbLineString) {
         m_layer.add_field("id", OFTInteger, 10);
         m_layer.add_field("type", OFTString, 30);
         m_layer.StartTransaction();

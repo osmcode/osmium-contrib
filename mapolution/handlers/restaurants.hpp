@@ -7,9 +7,9 @@ class RestaurantsHandler : public GeomHandler {
 
 public:
 
-    RestaurantsHandler(factory_type& factory, ogrcpp::DataSource& ds, const std::string& date) :
+    RestaurantsHandler(factory_type& factory, ogrcpp::Dataset& ds, const std::string& date) :
         GeomHandler(factory, ds),
-        m_layer(data_source(), "restaurants_" + date, wkbPoint) {
+        m_layer(dataset(), "restaurants_" + date, wkbPoint) {
         m_layer.add_field("id", OFTReal, 10);
         m_layer.StartTransaction();
     }
