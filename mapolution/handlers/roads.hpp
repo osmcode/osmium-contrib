@@ -3,11 +3,11 @@
 
 class RoadsHandler : public GeomHandler {
 
-    ogrcpp::Layer m_layer;
+    gdalcpp::Layer m_layer;
 
 public:
 
-    RoadsHandler(factory_type& factory, ogrcpp::Dataset& ds, const std::string& date) :
+    RoadsHandler(factory_type& factory, gdalcpp::Dataset& ds, const std::string& date) :
         GeomHandler(factory, ds),
         m_layer(dataset(), "roads_" + date, wkbLineString) {
         m_layer.add_field("id", OFTInteger, 10);
@@ -23,7 +23,7 @@ public:
         try {
             const char* highway = way.tags()["highway"];
             if (highway) {
-                ogrcpp::Feature f(m_layer, create_linestring(way));
+                gdalcpp::Feature f(m_layer, create_linestring(way));
                 f.set_field("id", static_cast<int>(way.id()));
                 f.set_field("type", highway);
                 f.add_to_layer();

@@ -3,11 +3,11 @@
 
 class BuildingsHandler : public GeomHandler {
 
-    ogrcpp::Layer m_layer;
+    gdalcpp::Layer m_layer;
 
 public:
 
-    BuildingsHandler(factory_type& factory, ogrcpp::Dataset& ds, const std::string& date) :
+    BuildingsHandler(factory_type& factory, gdalcpp::Dataset& ds, const std::string& date) :
         GeomHandler(factory, ds),
         m_layer(dataset(), "buildings_" + date, wkbMultiPolygon) {
         m_layer.add_field("id", OFTInteger, 10);
@@ -25,7 +25,7 @@ public:
         try {
             const char* building = area.tags()["building"];
             if (building) {
-                ogrcpp::Feature f(m_layer, create_multipolygon(area));
+                gdalcpp::Feature f(m_layer, create_multipolygon(area));
                 f.set_field("id", static_cast<int>(area.id()));
                 f.add_to_layer();
             }

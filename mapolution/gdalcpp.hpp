@@ -1,5 +1,5 @@
-#ifndef OGRCPP_HPP
-#define OGRCPP_HPP
+#ifndef GDALCPP_HPP
+#define GDALCPP_HPP
 
 #include <algorithm>
 #include <memory>
@@ -10,7 +10,10 @@
 #include <gdal_priv.h>
 #include <gdal_version.h>
 
-namespace ogrcpp {
+/**
+ * C++11 convenience wrapper classes for GDAL/OGR.
+ */
+namespace gdalcpp {
 
 #if GDAL_VERSION_MAJOR >= 2
     typedef GDALDriver gdal_driver_type;
@@ -71,7 +74,7 @@ namespace ogrcpp {
                 return const_cast<char**>(m_ptrs.get());
             }
 
-        };
+        }; // struct Options
 
     } // namespace detail
 
@@ -85,7 +88,7 @@ namespace ogrcpp {
                 OGRDataSource::DestroyDataSource(ds);
 #endif
             }
-        };
+        }; // struct gdal_dataset_deleter
 
         detail::Options m_options;
         std::unique_ptr<gdal_dataset_type, gdal_dataset_deleter> m_dataset;
@@ -190,6 +193,6 @@ namespace ogrcpp {
 
     }; // class Feature
 
-} // namespace ogrcpp
+} // namespace gdalcpp
 
-#endif // OGRCPP_HPP
+#endif // GDALCPP_HPP

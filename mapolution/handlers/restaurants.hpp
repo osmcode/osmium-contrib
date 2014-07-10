@@ -3,11 +3,11 @@
 
 class RestaurantsHandler : public GeomHandler {
 
-    ogrcpp::Layer m_layer;
+    gdalcpp::Layer m_layer;
 
 public:
 
-    RestaurantsHandler(factory_type& factory, ogrcpp::Dataset& ds, const std::string& date) :
+    RestaurantsHandler(factory_type& factory, gdalcpp::Dataset& ds, const std::string& date) :
         GeomHandler(factory, ds),
         m_layer(dataset(), "restaurants_" + date, wkbPoint) {
         m_layer.add_field("id", OFTReal, 10);
@@ -22,7 +22,7 @@ public:
         try {
             const char* amenity = node.tags()["amenity"];
             if (amenity && !strcmp(amenity, "restaurant")) {
-                ogrcpp::Feature f(m_layer, create_point(node));
+                gdalcpp::Feature f(m_layer, create_point(node));
                 f.set_field("id", static_cast<double>(node.id()));
                 f.add_to_layer();
             }
@@ -40,7 +40,7 @@ public:
         try {
             const char* amenity = area.tags()["amenity"];
             if (amenity && !strcmp(amenity, "restaurant")) {
-                ogrcpp::Feature f(m_layer, create_point(area.)); // get one node XXX
+                gdalcpp::Feature f(m_layer, create_point(area.)); // get one node XXX
                 f.set_field("id", static_cast<int>(area.id()));
                 f.add_to_layer();
             }

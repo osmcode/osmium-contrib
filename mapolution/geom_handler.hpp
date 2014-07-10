@@ -8,7 +8,7 @@
 # include <ogrsf_frmts.h>
 #pragma GCC diagnostic pop
 
-#include "ogrcpp.hpp"
+#include "gdalcpp.hpp"
 
 #include <osmium/geom/ogr.hpp>
 #include <osmium/geom/projection.hpp>
@@ -24,16 +24,16 @@ private:
     factory_type& m_factory;
     OGREnvelope m_envelope;
 
-    ogrcpp::Dataset& m_dataset;
+    gdalcpp::Dataset& m_dataset;
 
 public:
 
-    GeomHandler(factory_type& factory, ogrcpp::Dataset& dataset) :
+    GeomHandler(factory_type& factory, gdalcpp::Dataset& dataset) :
         m_factory(factory),
         m_dataset(dataset) {
     }
 
-    ogrcpp::Dataset& dataset() const {
+    gdalcpp::Dataset& dataset() const {
         return m_dataset;
     }
 

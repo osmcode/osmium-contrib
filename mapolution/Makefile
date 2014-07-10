@@ -45,7 +45,7 @@ PROGRAMS := mapolution
 
 all: $(PROGRAMS)
 
-main.o: main.cpp cmdline_options.hpp ogrcpp.hpp geom_handler.hpp handlers/*.hpp
+main.o: main.cpp cmdline_options.hpp gdalcpp.hpp geom_handler.hpp handlers/*.hpp
 	$(CXX) -c $(CXXFLAGS) $(CXXFLAGS_OGR) $(CXXFLAGS_WARNINGS) -o $@ $<
 
 cmdline_options.o: cmdline_options.cpp cmdline_options.hpp

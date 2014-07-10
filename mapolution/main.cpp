@@ -94,7 +94,7 @@ OGREnvelope extract(
         CPLSetConfigOption("OGR_SQLITE_CACHE", "512");
     }
 
-    ogrcpp::Dataset dataset(options.output_format, datasource_name, factory.proj_string(), datasource_options);
+    gdalcpp::Dataset dataset(options.output_format, datasource_name, factory.proj_string(), datasource_options);
 
 #ifdef HANDLER
     HANDLER geom_handler(factory, dataset, date);
