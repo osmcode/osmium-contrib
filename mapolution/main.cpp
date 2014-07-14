@@ -25,6 +25,8 @@
 typedef osmium::index::map::SparseTable<osmium::unsigned_object_id_type, osmium::Location> index_type;
 typedef osmium::handler::NodeLocationsForWays<index_type> location_handler_type;
 
+constexpr size_t initial_buffer_size = 10 * 1024 * 1024;
+
 OGREnvelope extract(
         Options& options,
         osmium::geom::OGRFactory<osmium::geom::Projection>& factory,
@@ -38,7 +40,7 @@ OGREnvelope extract(
 
     // nodes and ways
     typedef osmium::DiffIterator<osmium::memory::Buffer::t_iterator<osmium::OSMObject>> diff_iterator;
-    osmium::memory::Buffer fbuffer(1024*1024*10, osmium::memory::Buffer::auto_grow::yes);
+    osmium::memory::Buffer fbuffer(initial_buffer_size, osmium::memory::Buffer::auto_grow::yes);
     {
         auto dbegin = diff_iterator(begin, relations);
         auto dend   = diff_iterator(relations, relations);
@@ -55,7 +57,7 @@ OGREnvelope extract(
     options.vout << "  Done. Filtered data needs " << (fbuffer.committed() / (1024 * 1024)) << " MBytes.\n";
 
     // relations
-    osmium::memory::Buffer rbuffer(1024*1024*10, osmium::memory::Buffer::auto_grow::yes);
+    osmium::memory::Buffer rbuffer(initial_buffer_size, osmium::memory::Buffer::auto_grow::yes);
     {
         auto dbegin = diff_iterator(relations, end);
         auto dend   = diff_iterator(end, end);
