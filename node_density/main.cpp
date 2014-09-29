@@ -150,11 +150,11 @@ int main(int argc, char* argv[]) {
     if (options.epsg == 3857) {
         bool warning = false;
         if (options.box.bottom_left().lat() < -osmium::geom::MERCATOR_MAX_LAT) {
-            options.box.bottom_left().lat(-osmium::geom::MERCATOR_MAX_LAT);
+            options.box.bottom_left().set_lat(-osmium::geom::MERCATOR_MAX_LAT);
             warning = true;
         }
         if (options.box.top_right().lat() > osmium::geom::MERCATOR_MAX_LAT) {
-            options.box.top_right().lat(osmium::geom::MERCATOR_MAX_LAT);
+            options.box.top_right().set_lat(osmium::geom::MERCATOR_MAX_LAT);
             warning = true;
         }
         if (warning) {

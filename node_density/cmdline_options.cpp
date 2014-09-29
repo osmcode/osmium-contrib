@@ -89,19 +89,19 @@ Options::Options(int argc, char* argv[]) {
         }
 
         if (vm.count("top")) {
-            box.top_right().lat(vm["top"].as<double>());
+            box.top_right().set_lat(vm["top"].as<double>());
         }
 
         if (vm.count("right")) {
-            box.top_right().lon(vm["right"].as<double>());
+            box.top_right().set_lon(vm["right"].as<double>());
         }
 
         if (vm.count("bottom")) {
-            box.bottom_left().lat(vm["bottom"].as<double>());
+            box.bottom_left().set_lat(vm["bottom"].as<double>());
         }
 
         if (vm.count("left")) {
-            box.bottom_left().lon(vm["left"].as<double>());
+            box.bottom_left().set_lon(vm["left"].as<double>());
         }
 
         if (vm.count("build-overviews")) {
