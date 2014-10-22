@@ -121,7 +121,7 @@ namespace gdalcpp {
 
     class Layer {
 
-        OGRLayer* m_layer; 
+        OGRLayer* m_layer;
 
     public:
 

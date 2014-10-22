@@ -7,7 +7,7 @@ namespace po = boost::program_options;
 
 Options::Options(int argc, char* argv[]) {
     po::variables_map vm;
-    
+
     try {
         po::options_description cmdline("Options");
         cmdline.add_options()

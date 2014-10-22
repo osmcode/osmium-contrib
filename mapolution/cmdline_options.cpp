@@ -24,7 +24,7 @@ osmium::Timestamp Options::parse_time(std::string t) {
 
 Options::Options(int argc, char* argv[]) {
     po::variables_map vm;
-    
+
     try {
         po::options_description cmdline("Allowed options");
         cmdline.add_options()
