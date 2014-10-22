@@ -45,7 +45,7 @@ class NodeDensityHandler : public osmium::handler::Handler {
     std::unique_ptr<node_count_type[]> m_node_count;
 
     template <typename T>
-    static constexpr T in_range(T min, T value, T max) {
+    static T in_range(T min, T value, T max) {
         return std::min(std::max(value, min), max);
     }
 
