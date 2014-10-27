@@ -5,10 +5,15 @@ Show evolution of OSM map.
 
 ## Prerequisites
 
-You'll need libosmium (http://osmcode.org/libosmium) and its dependencies
-installed first.
+You'll need:
 
-You'll need the gdal library, more specifically the `gdal_rasterize` command.
+* libosmium (http://osmcode.org/libosmium) and its dependencies.
+* gdal (http://gdal.org/) library, more specifically the `gdal_rasterize`
+  command. (On Debian/Ubuntu install `libgdal-dev` package.)
+* `boost_system`, `boost_filesystem` and `boost_program_options`
+  (http://boost.org/).
+  (On Debian/Ubuntu install `libboost-system-dev`, `libboost-filesystem-dev`,
+  and `libboost-program-options-dev` packages.)
 
 ## Building
 
@@ -24,7 +29,7 @@ http://osm.personalwerk.de/full-history-extracts/ for some downloads.
 
 Run
 
-`./mapolution -v -S 30 OSMFILE`
+`./mapolution -S 30 OSMFILE`
 
 This will create shapefiles in `out` directory with building data for
 every 30 days.

@@ -1,10 +1,8 @@
 
-#include <cerrno>
 #include <numeric>
 #include <fstream>
 
-#include <sys/types.h>
-#include <dirent.h>
+#include <boost/filesystem.hpp>
 
 #include <osmium/area/assembler.hpp>
 #include <osmium/area/multipolygon_collector.hpp>
@@ -132,32 +130,23 @@ tspair min_max_timestamp(TIter begin, TIter end) {
 }
 
 void check_and_create_directory(const std::string& directory) {
-    DIR* dir = opendir(directory.c_str());
-    if (!dir) {
-        if (errno == ENOENT) {
-            if (mkdir(directory.c_str(), 0777) == 0) {
-                return;
-            }
-            std::cerr << "Error creating output directory '"
-                      << directory
-                      << "': "
-                      << strerror(errno)
-                      << ".\n";
-            std::cerr << "Mapolution will create at most one directory level for you.\n";
-            exit(return_code::fatal);
-        }
-        std::cerr << "Error accessing output directory '"
+    boost::filesystem::path dir(directory);
+
+    try {
+        boost::filesystem::create_directories(dir);
+    } catch (boost::filesystem::filesystem_error& e) {
+        std::cerr << "Error creating output directory '"
                   << directory
                   << "': "
-                  << strerror(errno)
+                  << e.what()
                   << ".\n";
         exit(return_code::fatal);
     }
-    int num_entries=0;
-    while (readdir(dir) != nullptr) {
-        ++num_entries;
-    }
-    if (num_entries != 2) { // empty directory contains just . and .. entries
+
+    int num_entries = std::distance(boost::filesystem::directory_iterator(dir),
+                                    boost::filesystem::directory_iterator());
+
+    if (num_entries != 0) {
         std::cerr << "Output directory '" << directory << "' is not empty.\n";
         exit(return_code::fatal);
     }

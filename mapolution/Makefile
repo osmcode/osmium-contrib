@@ -38,6 +38,7 @@ LIB_IO     := $(LIB_EXPAT) $(LIB_PBF) $(LIB_GZIP) $(LIB_BZIP2)
 LIB_OGR    := $(shell gdal-config --libs)
 LIB_PROJ   := -lproj
 LIB_PRGOPT := -lboost_program_options
+LIB_FS     := -lboost_system -lboost_filesystem
 
 PROGRAMS := mapolution
 
@@ -52,7 +53,7 @@ cmdline_options.o: cmdline_options.cpp cmdline_options.hpp
 	$(CXX) -c $(CXXFLAGS) $(CXXFLAGS_WARNINGS) -o $@ $<
 
 mapolution: main.o cmdline_options.o
-	$(CXX) -o $@ $^ $(LDFLAGS) $(LIB_IO) $(LIB_OGR) $(LIB_PROJ) $(LIB_PRGOPT)
+	$(CXX) -o $@ $^ $(LDFLAGS) $(LIB_IO) $(LIB_OGR) $(LIB_PROJ) $(LIB_PRGOPT) $(LIB_FS)
 
 clean:
 	rm -f *.o core $(PROGRAMS)
