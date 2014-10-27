@@ -54,7 +54,9 @@ OGREnvelope extract(
             }
         });
     }
-    options.vout << "  Done. Filtered data needs " << (fbuffer.committed() / (1024 * 1024)) << " MBytes.\n";
+    options.vout << "  Done. Filtered data needs "
+                 << (fbuffer.committed() / (1024 * 1024))
+                 << " MBytes.\n";
 
     // relations
     osmium::memory::Buffer rbuffer(initial_buffer_size, osmium::memory::Buffer::auto_grow::yes);
@@ -103,7 +105,11 @@ OGREnvelope extract(
 #else
     BuildingsHandler geom_handler(factory, dataset, date);
 #endif
-    osmium::apply(fbuffer.begin(), fbuffer.end(), location_handler, geom_handler, collector.handler([&geom_handler](const osmium::memory::Buffer& buffer) {
+    osmium::apply(fbuffer.begin(),
+                  fbuffer.end(),
+                  location_handler,
+                  geom_handler,
+                  collector.handler([&geom_handler](const osmium::memory::Buffer& buffer) {
         osmium::apply(buffer, geom_handler);
     }));
 
@@ -132,11 +138,19 @@ void check_and_create_directory(const std::string& directory) {
             if (mkdir(directory.c_str(), 0777) == 0) {
                 return;
             }
-            std::cerr << "Error creating output directory '" << directory << "': " << strerror(errno) << ".\n";
+            std::cerr << "Error creating output directory '"
+                      << directory
+                      << "': "
+                      << strerror(errno)
+                      << ".\n";
             std::cerr << "Mapolution will create at most one directory level for you.\n";
             exit(return_code::fatal);
         }
-        std::cerr << "Error accessing output directory '" << directory << "': " << strerror(errno) << ".\n";
+        std::cerr << "Error accessing output directory '"
+                  << directory
+                  << "': "
+                  << strerror(errno)
+                  << ".\n";
         exit(return_code::fatal);
     }
     int num_entries=0;
@@ -180,7 +194,9 @@ int main(int argc, char* argv[]) {
     osmium::memory::Buffer ibuffer = osmium::io::read_file(file, osmium::osm_entity_bits::object);
     options.vout << "Done. Input data needs " << (ibuffer.committed() / (1024 * 1024)) << " MBytes.\n";
 
-    osmium::memory::Buffer::t_iterator<osmium::OSMObject> first_relation = std::find_if(ibuffer.begin<osmium::OSMObject>(), ibuffer.end<osmium::OSMObject>(), [](const osmium::OSMObject& obj){
+    auto first_relation = std::find_if(ibuffer.begin<osmium::OSMObject>(),
+                                       ibuffer.end<osmium::OSMObject>(),
+                                       [](const osmium::OSMObject& obj){
         return obj.type() == osmium::item_type::relation;
     });
 
@@ -189,7 +205,8 @@ int main(int argc, char* argv[]) {
     osmium::Timestamp start_time = options.start_time;
     osmium::Timestamp end_time = options.end_time;
     if (!start_time || !end_time) {
-        tspair min_max = min_max_timestamp(ibuffer.cbegin<osmium::OSMObject>(), ibuffer.cend<osmium::OSMObject>());
+        tspair min_max = min_max_timestamp(ibuffer.cbegin<osmium::OSMObject>(),
+                                           ibuffer.cend<osmium::OSMObject>());
 
         if (!start_time) {
             options.vout << "No start time on command line, got it from file contents\n";
@@ -207,19 +224,37 @@ int main(int argc, char* argv[]) {
     osmium::geom::OGRFactory<osmium::geom::Projection> factory(osmium::geom::Projection(options.epsg));
 
     OGREnvelope envelope_all;
-    for (osmium::Timestamp t = start_time; t <= end_time; t = t + options.time_step * seconds_per_day) {
-        OGREnvelope env = extract(options, factory, ibuffer.begin<osmium::OSMObject>(), first_relation, ibuffer.end<osmium::OSMObject>(), t);
+    auto step = options.time_step * seconds_per_day;
+    for (osmium::Timestamp t = start_time; t <= end_time; t = t + step) {
+        OGREnvelope env = extract(
+            options,
+            factory,
+            ibuffer.begin<osmium::OSMObject>(),
+            first_relation,
+            ibuffer.end<osmium::OSMObject>(),
+            t
+        );
         envelope_all.Merge(env);
     }
 
     std::ofstream env_out(options.output_directory + "/bbox", std::ofstream::out);
     env_out << std::fixed
-        << "XMIN=" << envelope_all.MinX << "\n"
-        << "YMIN=" << envelope_all.MinY << "\n"
-        << "XMAX=" << envelope_all.MaxX << "\n"
-        << "YMAX=" << envelope_all.MaxY << "\n";
+            << "XMIN=" << envelope_all.MinX << "\n"
+            << "YMIN=" << envelope_all.MinY << "\n"
+            << "XMAX=" << envelope_all.MaxX << "\n"
+            << "YMAX=" << envelope_all.MaxY << "\n";
 
-    options.vout << "Bounding box calculated from output data: (" << std::fixed << envelope_all.MinX << ',' << envelope_all.MinY << ") (" << envelope_all.MaxX << ',' << envelope_all.MaxY << ")\n";
+    options.vout << "Bounding box calculated from output data: ("
+                 << std::fixed
+                 << envelope_all.MinX
+                 << ','
+                 << envelope_all.MinY
+                 << ") ("
+                 << envelope_all.MaxX
+                 << ','
+                 << envelope_all.MaxY
+                 << ")\n";
+
     options.vout << "Done.\n";
 
     google::protobuf::ShutdownProtobufLibrary();
