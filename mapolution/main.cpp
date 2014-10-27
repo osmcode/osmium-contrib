@@ -225,7 +225,7 @@ int main(int argc, char* argv[]) {
 
     OGREnvelope envelope_all;
     auto step = options.time_step * seconds_per_day;
-    for (osmium::Timestamp t = start_time; t <= end_time; t = t + step) {
+    for (osmium::Timestamp t = start_time; t <= end_time; t += step) {
         OGREnvelope env = extract(
             options,
             factory,
