@@ -9,6 +9,7 @@ find_path(OSMIUM_INCLUDE_DIR osmium/osm.hpp
     PATH_SUFFIXES include
     PATHS
     ../libosmium
+    ../../libosmium
     libosmium
     ~/Library/Frameworks
     /Library/Frameworks
@@ -53,7 +54,7 @@ if(";${Osmium_FIND_COMPONENTS};" MATCHES ";io;")
     endif()
   endif()
 
-  if (WIN32)
+  if(WIN32)
     list(APPEND OSMIUM_LIBRARIES ws2_32)
   endif()
 

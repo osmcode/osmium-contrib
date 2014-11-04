@@ -29,4 +29,4 @@ if(APPLE)
     set(LDFLAGS ${LDFLAGS} -stdlib=libc++)
 endif(APPLE)
 
-message(STATUS "Some complier and linker options were changed by OsmiumOptions")
+message(STATUS "Some compiler and linker options were changed by OsmiumOptions")

@@ -15,9 +15,11 @@ function(add_cppcheck_target _var)
     # cpp doesn't find system includes for some reason, suppress that report
     set(CPPCHECK_OPTIONS ${CPPCHECK_OPTIONS} --suppress=missingIncludeSystem)
 
-    add_custom_target(cppcheck ${CPPCHECK} --std=c++11 ${CPPCHECK_OPTIONS} ${_var})
+    file(GLOB SOURCES ${_var})
+    add_custom_target(cppcheck ${CPPCHECK} --std=c++11 ${CPPCHECK_OPTIONS} ${SOURCES})
   else()
     message(STATUS "Looking for cppcheck - not found")
     message(STATUS "  Make target cppcheck not available")
   endif(CPPCHECK)
+
 endfunction()
