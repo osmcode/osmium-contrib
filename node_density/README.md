@@ -22,7 +22,19 @@ Proj
 
 ## Building
 
-Run `make`.
+Osmium-contrib uses CMake for its builds. For Unix/Linux systems a simple
+Makefile wrapper is provided to make the build even easier.
+
+To build just type `make`. Results will be in the `build` subdirectory.
+
+Or you can go the long route explicitly calling CMake as follows:
+
+```
+mkdir build
+cd build
+cmake ..
+make
+```
 
 
 ## Running

@@ -7,32 +7,35 @@ to work with the Osmium library.
 You have to set up Osmium first. See http://osmcode.org/libosmium .
 
 
-## LICENSE
+## License
 
 All contributions have their own licenses.
 
 
-## BUILDING
+## Building
 
-This will work easiest if you have Osmium installed in your normal INCLUDE path
+This will work easiest if you have Osmium installed in your normal include path
 or if the libosmium git repository is checked out in the same directory as the
 "osmium-contrib" repository.
 
-Currently there are two ways to build the programs, the old way just using GNU
-make and the new cmake-based build system.
+Osmium-contrib uses CMake for its builds. For Unix/Linux systems a simple
+Makefile wrapper is provided to make the build even easier.
 
-### Using cmake
+### Building all projects
 
-You can do the following either in the main directory to build all programs or
-in the directory of the program you are interested in:
+In the main directory type `make`. Results will be in the `build` subdirectory.
 
-    mkdir build
-    cd build
-    cmake ..
-    make
+Or you can go the long route explicitly calling CMake as follows:
 
-### Using make
+```
+mkdir build
+cd build
+cmake ..
+make
+```
 
-All programs can simply be compiled by calling "make" in their respective
-directories. Calling "make" in the main directory will make all programs.
+### Building a single project
+
+You can build each project by itself by changing into its directory and calling
+`make` or `cmake` as described above.
 

@@ -17,9 +17,26 @@ You'll need:
 
 ## Building
 
-Build with `make`. Set `HANDLER` environment variable before calling
-make to switch handlers. Available handlers are "BuildingsHandler",
-"RestaurantsHandler", and "RoadsHandler". See the `handlers` directory.
+Osmium-contrib uses CMake for its builds. For Unix/Linux systems a simple
+Makefile wrapper is provided to make the build even easier.
+
+To build just type `make`. Results will be in the `build` subdirectory.
+
+Or you can go the long route explicitly calling CMake as follows:
+
+```
+mkdir build
+cd build
+cmake ..
+make
+```
+
+You can switch to a different handler:
+
+  cmake -DHANDLER=RoadsHandler
+
+Available handlers are "BuildingsHandler", "RestaurantsHandler", and
+"RoadsHandler". See the `handlers` directory.
 
 # Running
 
