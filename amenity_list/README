@@ -1,3 +1,0 @@
-Prints a list of all amenities in the file with type, name and coordinates.
-For amenities that are mapped as areas the centroid will be printed as
-coordinate.
