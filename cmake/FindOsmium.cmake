@@ -47,24 +47,22 @@ if(";${Osmium_FIND_COMPONENTS};" MATCHES ";io;")
       ${OSMPBF_LIBRARIES} ${PROTOBUF_LITE_LIBRARY}
       ${ZLIB_LIBRARY} ${BZIP2_LIBRARIES}
       ${EXPAT_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
+    list(APPEND OSMIUM_INCLUDE_DIRS
+      ${OSMPBF_INCLUDE_DIRS}
+      ${PROTOBUF_INCLUDE_DIR}
+      ${EXPAT_INCLUDE_DIR}
+      ${BZIP2_INCLUDE_DIR}
+      ${ZLIB_INCLUDE_DIR}
+    )
+    if(WIN32)
+      list(APPEND OSMIUM_LIBRARIES ws2_32)
+    endif()
   else()
     set(MISSING_LIBRARIES 1)
     if(Osmium_FIND_REQUIRED)
       message(FATAL_ERROR "Can not find some libraries for Osmium input/output formats, please install them or configure the paths")
     endif()
   endif()
-
-  if(WIN32)
-    list(APPEND OSMIUM_LIBRARIES ws2_32)
-  endif()
-
-  list(APPEND OSMIUM_INCLUDE_DIRS
-    ${OSMPBF_INCLUDE_DIRS}
-    ${PROTOBUF_INCLUDE_DIR}
-    ${EXPAT_INCLUDE_DIR}
-    ${BZIP2_INCLUDE_DIR}
-    ${ZLIB_INCLUDE_DIR}
-  )
 endif()
 
 if(";${Osmium_FIND_COMPONENTS};" MATCHES ";geos;")
@@ -74,14 +72,14 @@ if(";${Osmium_FIND_COMPONENTS};" MATCHES ";geos;")
   if(GEOS_INCLUDE_DIR AND GEOS_LIBRARY)
     message(STATUS "Found GEOS: " ${GEOS_LIBRARY})
     SET(GEOS_FOUND 1)
+    list(APPEND OSMIUM_LIBRARIES ${GEOS_LIBRARY})
+    list(APPEND OSMIUM_INCLUDE_DIRS ${GEOS_INCLUDE_DIR})
   else()
     set(MISSING_LIBRARIES 1)
     if(Osmium_FIND_REQUIRED)
       message(FATAL_ERROR "GEOS library is required but not found, please install it or configure the paths")
     endif()
   endif()
-  list(APPEND OSMIUM_LIBRARIES ${GEOS_LIBRARY})
-  list(APPEND OSMIUM_INCLUDE_DIRS ${GEOS_INCLUDE_DIR})
 endif()
 
 if(";${Osmium_FIND_COMPONENTS};" MATCHES ";gdal;")
@@ -91,9 +89,10 @@ if(";${Osmium_FIND_COMPONENTS};" MATCHES ";gdal;")
     if(Osmium_FIND_REQUIRED)
       message(FATAL_ERROR "GDAL library is required but not found, please install it or configure the paths")
     endif()
+  else()
+    list(APPEND OSMIUM_LIBRARIES ${GDAL_LIBRARY})
+    list(APPEND OSMIUM_INCLUDE_DIRS ${GDAL_INCLUDE_DIR})
   endif()
-  list(APPEND OSMIUM_LIBRARIES ${GDAL_LIBRARY})
-  list(APPEND OSMIUM_INCLUDE_DIRS ${GDAL_INCLUDE_DIR})
 endif()
 
 if(";${Osmium_FIND_COMPONENTS};" MATCHES ";proj;")
@@ -103,14 +102,14 @@ if(";${Osmium_FIND_COMPONENTS};" MATCHES ";proj;")
   if(PROJ_INCLUDE_DIR AND PROJ_LIBRARY)
     message(STATUS "Found PROJ: " ${PROJ_LIBRARY})
     set(PROJ_FOUND 1)
+    list(APPEND OSMIUM_LIBRARIES ${PROJ_LIBRARY})
+    list(APPEND OSMIUM_INCLUDE_DIRS ${PROJ_INCLUDE_DIR})
   else()
     set(MISSING_LIBRARIES 1)
     if(Osmium_FIND_REQUIRED)
       message(FATAL_ERROR "PROJ library is required but not found, please install it or configure the paths")
     endif()
   endif()
-  list(APPEND OSMIUM_LIBRARIES ${PROJ_LIBRARY})
-  list(APPEND OSMIUM_INCLUDE_DIRS ${PROJ_INCLUDE_DIR})
 endif()
 
 if(";${Osmium_FIND_COMPONENTS};" MATCHES ";sparsehash;")
@@ -119,13 +118,13 @@ if(";${Osmium_FIND_COMPONENTS};" MATCHES ";sparsehash;")
   if(SPARSEHASH_INCLUDE_DIR)
     message(STATUS "Found SparseHash")
     set(SPARSEHASH_FOUND 1)
+    list(APPEND OSMIUM_INCLUDE_DIRS ${SPARSEHASH_INCLUDE_DIR})
   else()
     set(MISSING_LIBRARIES 1)
     if(Osmium_FIND_REQUIRED)
       message(FATAL_ERROR "SparseHash library is required but not found, please install it or configure the paths")
     endif()
   endif()
-  list(APPEND OSMIUM_INCLUDE_DIRS ${SPARSEHASH_INCLUDE_DIR})
 endif()
 
 list(REMOVE_DUPLICATES OSMIUM_INCLUDE_DIRS)
