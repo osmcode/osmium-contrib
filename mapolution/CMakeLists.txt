@@ -18,6 +18,13 @@ include_directories(${OSMIUM_INCLUDE_DIRS})
 
 #----------------------------------------------------------------------
 
+if(HANDLER)
+    add_definitions(-DHANDLER=${HANDLER})
+    message(STATUS "Using handler: ${HANDLER}")
+endif()
+
+#----------------------------------------------------------------------
+
 set(PROG mapolution)
 file(GLOB SOURCES *.cpp *.hpp)
 add_executable(${PROG} ${SOURCES})
