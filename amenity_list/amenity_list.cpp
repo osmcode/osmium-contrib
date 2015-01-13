@@ -4,16 +4,15 @@
 #include <cstdio>
 #include <iostream>
 
+#include <osmium/index/map/sparse_mem_array.hpp>
+#include <osmium/handler/node_locations_for_ways.hpp>
+typedef osmium::index::map::SparseMemArray<osmium::unsigned_object_id_type, osmium::Location> index_type;
+typedef osmium::handler::NodeLocationsForWays<index_type> location_handler_type;
+
 #include <osmium/area/assembler.hpp>
 #include <osmium/area/multipolygon_collector.hpp>
-#include <osmium/handler.hpp>
-#include <osmium/handler/node_locations_for_ways.hpp>
-#include <osmium/index/map/sparse_table.hpp>
 #include <osmium/io/any_input.hpp>
 #include <osmium/visitor.hpp>
-
-typedef osmium::index::map::SparseTable<osmium::unsigned_object_id_type, osmium::Location> index_pos_type;
-typedef osmium::handler::NodeLocationsForWays<index_pos_type> location_handler_type;
 
 class AmenityHandler : public osmium::handler::Handler {
 
@@ -69,7 +68,7 @@ int main(int argc, char* argv[]) {
     reader1.close();
     std::cerr << "Pass 1 done\n";
 
-    index_pos_type index;
+    index_type index;
     location_handler_type location_handler(index);
     location_handler.ignore_errors();
 

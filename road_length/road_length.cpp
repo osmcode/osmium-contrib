@@ -7,10 +7,9 @@
 #include <osmium/geom/haversine.hpp>
 #include <osmium/visitor.hpp>
 
-#include <osmium/index/map/sparse_table.hpp>
-typedef osmium::index::map::SparseTable<osmium::unsigned_object_id_type, osmium::Location> index_type;
-
+#include <osmium/index/map/sparse_mem_array.hpp>
 #include <osmium/handler/node_locations_for_ways.hpp>
+typedef osmium::index::map::SparseMemArray<osmium::unsigned_object_id_type, osmium::Location> index_type;
 typedef osmium::handler::NodeLocationsForWays<index_type> location_handler_type;
 
 struct RoadLengthHandler : public osmium::handler::Handler {

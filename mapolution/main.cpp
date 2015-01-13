@@ -8,10 +8,13 @@
 #include <osmium/area/multipolygon_collector.hpp>
 #include <osmium/diff_iterator.hpp>
 #include <osmium/handler.hpp>
-#include <osmium/handler/node_locations_for_ways.hpp>
-#include <osmium/index/map/sparse_table.hpp>
 #include <osmium/io/any_input.hpp>
 #include <osmium/visitor.hpp>
+
+#include <osmium/index/map/sparse_mem_array.hpp>
+#include <osmium/handler/node_locations_for_ways.hpp>
+typedef osmium::index::map::SparseMemArray<osmium::unsigned_object_id_type, osmium::Location> index_type;
+typedef osmium::handler::NodeLocationsForWays<index_type> location_handler_type;
 
 #include "cmdline_options.hpp"
 #include "geom_handler.hpp"
@@ -19,9 +22,6 @@
 #include "handlers/buildings.hpp"
 #include "handlers/restaurants.hpp"
 #include "handlers/roads.hpp"
-
-typedef osmium::index::map::SparseTable<osmium::unsigned_object_id_type, osmium::Location> index_type;
-typedef osmium::handler::NodeLocationsForWays<index_type> location_handler_type;
 
 constexpr size_t initial_buffer_size = 10 * 1024 * 1024;
 

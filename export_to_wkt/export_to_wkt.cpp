@@ -8,15 +8,13 @@
 #include <osmium/area/multipolygon_collector.hpp>
 #include <osmium/geom/wkt.hpp>
 #include <osmium/handler.hpp>
-#include <osmium/handler/node_locations_for_ways.hpp>
 #include <osmium/io/any_input.hpp>
 #include <osmium/visitor.hpp>
-#include <osmium/index/map/stl_map.hpp>
 
-typedef osmium::index::map::StlMap<osmium::unsigned_object_id_type, osmium::Location> index_type;
-
-typedef osmium::handler::NodeLocationsForWays<index_type, index_type> location_handler_type;
-
+#include <osmium/index/map/sparse_mem_array.hpp>
+#include <osmium/handler/node_locations_for_ways.hpp>
+typedef osmium::index::map::SparseMemArray<osmium::unsigned_object_id_type, osmium::Location> index_type;
+typedef osmium::handler::NodeLocationsForWays<index_type> location_handler_type;
 
 class ExportToWKTHandler : public osmium::handler::Handler {
 
@@ -62,9 +60,8 @@ int main(int argc, char* argv[]) {
     collector.read_relations(reader1);
     std::cerr << "Pass 1 done\n";
 
-    index_type index_pos;
-    index_type index_neg;
-    location_handler_type location_handler(index_pos, index_neg);
+    index_type index;
+    location_handler_type location_handler(index);
 
     std::cerr << "Pass 2...\n";
     ExportToWKTHandler export_handler;
