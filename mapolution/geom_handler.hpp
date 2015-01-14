@@ -1,13 +1,6 @@
 #ifndef GEOM_HANDLER_HPP
 #define GEOM_HANDLER_HPP
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wold-style-cast"
-#pragma GCC diagnostic ignored "-Wredundant-decls"
-# include <ogr_api.h>
-# include <ogrsf_frmts.h>
-#pragma GCC diagnostic pop
-
 #include "gdalcpp.hpp"
 
 #include <osmium/geom/ogr.hpp>
