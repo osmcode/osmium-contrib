@@ -1,12 +1,17 @@
-#----------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 #
-#  Osmium-contrib CMakeLists.txt
+#  CMake Config
 #
-#----------------------------------------------------------------------
-project(osmium-contrib)
+#  Osmium-contrib
+#
+#-----------------------------------------------------------------------------
 
-cmake_minimum_required(VERSION 2.8.5)
+cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+
+
+#-----------------------------------------------------------------------------
+project(osmium-contrib)
 
 include(common)
 
@@ -16,15 +21,24 @@ include_directories(${Boost_INCLUDE_DIRS})
 find_package(Osmium REQUIRED COMPONENTS io gdal proj sparsehash)
 include_directories(${OSMIUM_INCLUDE_DIRS})
 
-macro(COMPILE_PROGRAM PROG)
-  file(GLOB SOURCES ${PROG}/*.cpp ${PROG}/*.hpp)
-  add_executable(${PROG} ${SOURCES})
-  target_link_libraries(${PROG} ${Boost_LIBRARIES} ${OSMIUM_LIBRARIES})
+
+#-----------------------------------------------------------------------------
+#
+#  Configure all subprojects on their own
+#
+#-----------------------------------------------------------------------------
+macro(configure_subproject _subproject)
+    file(GLOB SOURCES ${_subproject}/*.cpp ${_subproject}/*.hpp)
+    add_executable(${_subproject} ${SOURCES})
+    target_link_libraries(${_subproject} ${Boost_LIBRARIES} ${OSMIUM_LIBRARIES})
 endmacro()
 
-COMPILE_PROGRAM(amenity_list)
-COMPILE_PROGRAM(pub_names)
-COMPILE_PROGRAM(road_length)
-COMPILE_PROGRAM(export_to_wkt)
-COMPILE_PROGRAM(node_density)
-COMPILE_PROGRAM(mapolution)
+configure_subproject(amenity_list)
+configure_subproject(pub_names)
+configure_subproject(road_length)
+configure_subproject(export_to_wkt)
+configure_subproject(node_density)
+configure_subproject(mapolution)
+
+
+#-----------------------------------------------------------------------------
