@@ -3,8 +3,6 @@
 
 #include <boost/program_options.hpp>
 
-namespace po = boost::program_options;
-
 osmium::Timestamp Options::parse_time(std::string t) {
     try {
         t.append("T00:00:00Z");
@@ -23,6 +21,8 @@ osmium::Timestamp Options::parse_time(std::string t) {
 }
 
 Options::Options(int argc, char* argv[]) {
+    namespace po = boost::program_options;
+
     po::variables_map vm;
 
     try {

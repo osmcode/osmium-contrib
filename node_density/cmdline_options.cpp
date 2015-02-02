@@ -3,9 +3,9 @@
 
 #include <boost/program_options.hpp>
 
-namespace po = boost::program_options;
-
 Options::Options(int argc, char* argv[]) {
+    namespace po = boost::program_options;
+
     po::variables_map vm;
 
     try {
