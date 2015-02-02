@@ -20,7 +20,7 @@ install:
  - sudo rm /usr/bin/cpp
  - sudo ln -s /usr/bin/cpp-4.8 /usr/bin/cpp
  # upgrade libosmium dependencies
- - sudo apt-get install --yes make libboost-dev libboost-program-options-dev libprotobuf-dev protobuf-compiler
+ - sudo apt-get install --yes make libboost-dev libboost-program-options-dev libboost-system-dev libboost-filesystem-dev libgdal-dev libproj-dev libprotobuf-dev protobuf-compiler
  - cd ..
  - git clone https://github.com/osmcode/libosmium.git
  # OSMPBF is too old, install from git
@@ -29,12 +29,12 @@ install:
  - cd OSM-binary/src
  - make
  - sudo make install
- - cd ../..
 
-before_script:
- - true
+#before_script:
+# - true
 
 script:
+ - cd $TRAVIS_BUILD_DIR
  - if [ "${CXX}" = 'g++' ]; then export CXX=g++-4.8; fi;
  - mkdir build
  - cd build
