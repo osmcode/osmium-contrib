@@ -39,7 +39,7 @@ Available handlers are `BuildingsHandler`, `RestaurantsHandler`, and
 easily.
 
 
-# Running
+## Running
 
 First you need a full history dump extract of a city or so. The area
 can't be too large, because everything has to fit into memory. See
@@ -59,7 +59,7 @@ Then run
 This will create an animated GIF called `anim.gif` with the result.
 
 
-# Customizing
+## Customizing
 
 See `./mapolution --help` for more parameters.
 
@@ -67,4 +67,14 @@ See the beginning of the `rasterize.sh` script for some parameters.
 
 See the `handlers` directory for how to create handlers and create
 your own. You have to add an include directive to `main.cpp`.
+
+
+## License
+
+This program is released into the Public Domain.
+
+
+## Author
+
+Jochen Topf (http://jochentopf.com/)
 
