@@ -7,7 +7,7 @@ A simple program to calculate the length of the road network (everything tagged
 
 ## Prerequisites
 
-You'll need [http://osmcode.org/libosmium](libosmium) and its dependencies
+You'll need [Libosmium](http://osmcode.org/libosmium) and its dependencies
 installed first.
 
 

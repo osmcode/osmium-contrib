@@ -6,7 +6,7 @@ A simple program to show the names of all pubs from the given OSM file.
 
 ## Prerequisites
 
-You'll need [http://osmcode.org/libosmium](libosmium) and its dependencies
+You'll need [Libosmium](http://osmcode.org/libosmium) and its dependencies
 installed first.
 
 

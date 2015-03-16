@@ -4,7 +4,7 @@
 This repository contains a mixed bunch of more or less useful examples of how
 to work with the Osmium library.
 
-You have to set up Libosmium first. See http://osmcode.org/libosmium .
+You have to set up [Libosmium](http://osmcode.org/libosmium) first.
 
 [![Build Status](https://secure.travis-ci.org/osmcode/osmium-contrib.png)](http://travis-ci.org/osmcode/osmium-contrib)
 
@@ -12,7 +12,7 @@ You have to set up Libosmium first. See http://osmcode.org/libosmium .
 ## Building
 
 This will work easiest if you have Libosmium installed in your normal include
-path or if the libosmium git repository is checked out in the same directory as
+path or if the Libosmium git repository is checked out in the same directory as
 the "osmium-contrib" repository.
 
 Osmium-contrib uses CMake for its builds. For Unix/Linux systems a simple

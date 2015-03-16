@@ -6,14 +6,14 @@ Visualize the node density in a given OSM file.
 
 ## Prerequisites
 
-You'll need [http://osmcode.org/libosmium](libosmium) and its dependencies
+You'll need [Libosmium](http://osmcode.org/libosmium) and its dependencies
 installed first.
 
 You'll need the following libraries:
 
-[http://www.gdal.org/](GDAL) - Debian/Ubuntu: libgdal-dev, gdal-bin
+[GDAL](http://www.gdal.org/) - Debian/Ubuntu: libgdal-dev, gdal-bin
 
-[http://trac.osgeo.org/proj/](Proj) - Debian/Ubuntu: libproj-dev
+[Proj](http://trac.osgeo.org/proj/) - Debian/Ubuntu: libproj-dev
 
 
 ## Building

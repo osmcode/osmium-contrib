@@ -7,8 +7,8 @@ Show evolution of OSM map.
 
 You'll need:
 
-* libosmium (http://osmcode.org/libosmium) and its dependencies.
-* gdal (http://gdal.org/) library, more specifically the `gdal_rasterize`
+* [Libosmium](http://osmcode.org/libosmium) and its dependencies.
+* [GDAL](http://gdal.org/) library, more specifically the `gdal_rasterize`
   command. (On Debian/Ubuntu install `libgdal-dev` and `gdal-bin` packages.)
 * `boost_filesystem` and `boost_program_options`
   (http://boost.org/) version 1.48 or later.
