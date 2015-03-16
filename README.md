@@ -4,7 +4,9 @@
 This repository contains a mixed bunch of more or less useful examples of how
 to work with the Osmium library.
 
-You have to set up Osmium first. See http://osmcode.org/libosmium .
+You have to set up Libosmium first. See http://osmcode.org/libosmium .
+
+[![Build Status](https://secure.travis-ci.org/osmcode/osmium-contrib.png)](http://travis-ci.org/osmcode/osmium-contrib)
 
 
 ## Building
