@@ -6,18 +6,14 @@ Visualize the node density in a given OSM file.
 
 ## Prerequisites
 
-You'll need libosmium (http://osmcode.org/libosmium) and its dependencies
+You'll need [http://osmcode.org/libosmium](libosmium) and its dependencies
 installed first.
 
 You'll need the following libraries:
 
-GDAL
-    http://www.gdal.org/
-    Debian/Ubuntu: libgdal-dev, gdal-bin
+[http://www.gdal.org/](GDAL) - Debian/Ubuntu: libgdal-dev, gdal-bin
 
-Proj
-    http://trac.osgeo.org/proj/
-    Debian/Ubuntu: libproj-dev
+[http://trac.osgeo.org/proj/](Proj) - Debian/Ubuntu: libproj-dev
 
 
 ## Building
@@ -29,26 +25,24 @@ To build just type `make`. Results will be in the `build` subdirectory.
 
 Or you can go the long route explicitly calling CMake as follows:
 
-```
-mkdir build
-cd build
-cmake ..
-make
-```
+    mkdir build
+    cd build
+    cmake ..
+    make
 
 
 ## Running
 
 Run the program with an OSM dump as its only argument:
 
-`node_density planet.osm.pbf`
+    node_density planet.osm.pbf
 
 This will use some sensible default settings that are displayed after the
 program start. Depending on the settings this will run for several minutes.
 
 For available options see
 
-`node_density --help`
+    node_density --help
 
 
 ## Viewing results
@@ -60,7 +54,7 @@ the default name `out.tif`.
 
 ### With QGIS
 
-Run [qgis](http://qgis.org/) and open the output file with it, either through
+Run [QGIS](http://qgis.org/) and open the output file with it, either through
 the "Layer -> Add Raster Layer.." menu or by dragging the file onto the QGIS
 window. Open the "Layer Properties" dialogue, choose the "Style" tab and change
 the "Min" and "Max" values to "0" and "1000", respectively. You should see the

@@ -2,12 +2,12 @@
 # Road Length
 
 A simple program to calculate the length of the road network (everything tagged
-highway=*) from the given OSM file.
+`highway=*`) from the given OSM file.
 
 
 ## Prerequisites
 
-You'll need libosmium (http://osmcode.org/libosmium) and its dependencies
+You'll need [http://osmcode.org/libosmium](libosmium) and its dependencies
 installed first.
 
 
@@ -20,19 +20,17 @@ To build just type `make`. Results will be in the `build` subdirectory.
 
 Or you can go the long route explicitly calling CMake as follows:
 
-```
-mkdir build
-cd build
-cmake ..
-make
-```
+    mkdir build
+    cd build
+    cmake ..
+    make
 
 
 ## Running
 
 Run the program with an OSM file as its only argument:
 
-`road_length germany.osm.pbf`
+    road_length germany.osm.pbf
 
 
 ## License
