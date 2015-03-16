@@ -42,4 +42,5 @@ script:
  - cmake -LA -DCMAKE_BUILD_TYPE=${CONFIGURATION} ..
  - make VERBOSE=1
 # build and test each subproject by itself
+ - cd $TRAVIS_BUILD_DIR
  - cmake/build_subprojects.sh ${CONFIGURATION}
