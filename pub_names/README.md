@@ -32,6 +32,11 @@ Run the program with an OSM file as its only argument:
     pub_names ireland.osm.pbf
 
 
+## Tests
+
+Run `ctest` after building to run the tests.
+
+
 ## License
 
 This program is released into the Public Domain.

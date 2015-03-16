@@ -36,8 +36,10 @@ install:
 script:
  - cd $TRAVIS_BUILD_DIR
  - if [ "${CXX}" = 'g++' ]; then export CXX=g++-4.8; fi;
+# build all subprojects together
  - mkdir build
  - cd build
  - cmake -LA -DCMAKE_BUILD_TYPE=${CONFIGURATION} ..
  - make VERBOSE=1
-
+# build and test each subproject by itself
+ - cmake/build_subprojects.sh ${CONFIGURATION}

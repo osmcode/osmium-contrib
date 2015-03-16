@@ -69,6 +69,11 @@ See the `handlers` directory for how to create handlers and create
 your own. You have to add an include directive to `main.cpp`.
 
 
+## Tests
+
+Run `ctest` after building to run the tests.
+
+
 ## License
 
 This program is released into the Public Domain.

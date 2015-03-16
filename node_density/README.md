@@ -92,6 +92,11 @@ gdaldem color-relief out.tif colors.txt -of PNG out-color.png
 An example `colors.txt` is part of the `node_density` distribution.
 
 
+## Tests
+
+Run `ctest` after building to run the tests.
+
+
 ## License
 
 This program is released into the Public Domain.
