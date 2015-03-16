@@ -34,11 +34,11 @@ macro(configure_subproject _subproject)
 endmacro()
 
 configure_subproject(amenity_list)
+configure_subproject(export_to_wkt)
+configure_subproject(mapolution)
+configure_subproject(node_density)
 configure_subproject(pub_names)
 configure_subproject(road_length)
-configure_subproject(export_to_wkt)
-configure_subproject(node_density)
-configure_subproject(mapolution)
 
 
 #-----------------------------------------------------------------------------
