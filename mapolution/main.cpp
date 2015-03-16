@@ -1,4 +1,6 @@
 
+// The code in this file is released into the Public Domain.
+
 #include <numeric>
 #include <fstream>
 

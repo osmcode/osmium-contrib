@@ -1,6 +1,8 @@
 #ifndef GEOM_HANDLER_HPP
 #define GEOM_HANDLER_HPP
 
+// The code in this file is released into the Public Domain.
+
 #include "gdalcpp.hpp"
 
 #include <osmium/geom/ogr.hpp>

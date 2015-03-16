@@ -1,6 +1,8 @@
 #ifndef GDALCPP_HPP
 #define GDALCPP_HPP
 
+// The code in this file is released into the Public Domain.
+
 #include <algorithm>
 #include <memory>
 #include <stdexcept>

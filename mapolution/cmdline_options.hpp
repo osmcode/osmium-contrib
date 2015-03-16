@@ -1,6 +1,8 @@
 #ifndef CMDLINE_OPTIONS_HPP
 #define CMDLINE_OPTIONS_HPP
 
+// The code in this file is released into the Public Domain.
+
 #include <string>
 
 #include <osmium/osm/timestamp.hpp>
