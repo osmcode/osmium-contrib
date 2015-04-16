@@ -44,16 +44,15 @@ class NodeDensityHandler : public osmium::handler::Handler {
 
     std::unique_ptr<node_count_type[]> m_node_count;
 
-    template <typename T>
-    static T in_range(T min, T value, T max) {
+    static int in_range(int min, int value, int max) {
         return std::min(std::max(value, min), max);
     }
 
     void record_location(const osmium::Location& location) {
         if (m_options.box.contains(location)) {
             osmium::geom::Coordinates c = m_projection(location);
-            const int x = in_range(0, static_cast<int>((c.x - m_bottom_left.x) * m_factor_x), m_width - 1);
-            const int y = in_range(0, static_cast<int>((c.y - m_top_right.y) * m_factor_y), m_height - 1);
+            const int x = in_range(0, (c.x - m_bottom_left.x) * m_factor_x, m_width  - 1);
+            const int y = in_range(0, (c.y - m_top_right.y)   * m_factor_y, m_height - 1);
             const int n = y * m_width + x;
             ++m_node_count[n];
         }
@@ -128,7 +127,8 @@ public:
         }
 
         if (m_options.build_overview) {
-            int num = std::min(static_cast<int>(std::log2(m_width / 256.0)), 8);
+            int num = std::log2(m_width / 256.0);
+            num = std::min(num, 8);
             int overview_list[] = { 2, 4, 8, 16, 32, 64, 128, 256 };
             dataset->BuildOverviews("AVERAGE", num, overview_list, 0, nullptr, nullptr, nullptr);
         }
