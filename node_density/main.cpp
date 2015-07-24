@@ -191,7 +191,5 @@ int main(int argc, char* argv[]) {
     options.vout << "Writing image to output file...\n";
     handler.write_to_file();
     options.vout << "Done.\n";
-
-    google::protobuf::ShutdownProtobufLibrary();
 }
 

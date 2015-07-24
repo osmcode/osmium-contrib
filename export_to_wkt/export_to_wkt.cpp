@@ -70,8 +70,5 @@ int main(int argc, char* argv[]) {
         osmium::apply(buffer, export_handler);
     }));
     std::cerr << "Pass 2 done\n";
-
-    google::protobuf::ShutdownProtobufLibrary();
-
 }
 
