@@ -6,45 +6,53 @@
 
 language: cpp
 
-compiler:
- - gcc
- - clang
+sudo: false
 
-env:
- - CONFIGURATION=Dev
- - CONFIGURATION=Release
+matrix:
+    include:
+        - os: linux
+          compiler: clang
+          env: BUILD_TYPE=Dev
+        - os: linux
+          compiler: clang
+          env: BUILD_TYPE=Release
+        - os: linux
+          compiler: gcc
+          env: BUILD_TYPE=Dev
+        - os: linux
+          compiler: gcc
+          env: BUILD_TYPE=Release
 
-before_install:
- # upgrade compiler (we need at least g++-4.8 for C++11 features)
- - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
- - sudo apt-get update --yes -qq
- - gcc_version=4.8
- - sudo apt-get install --yes gcc-${gcc_version} g++-${gcc_version}
- - gcc-${gcc_version} --version
- # make sure compiler executables point to the just installed version
- - sudo ln -sf /usr/bin/cpp-${gcc_version} /usr/bin/cpp
- - sudo ln -sf /usr/bin/gcc-${gcc_version} /usr/bin/gcc
- - sudo ln -sf /usr/bin/g++-${gcc_version} /usr/bin/g++
- # install dependencies
- - sudo apt-get install --yes make libboost1.48-dev libboost-program-options1.48-dev libboost-filesystem1.48-dev libsparsehash-dev libgdal-dev libproj-dev libprotobuf-dev protobuf-compiler
+# http://docs.travis-ci.com/user/apt/
+addons:
+    apt:
+        sources:
+            - boost-latest
+            - ubuntu-toolchain-r-test
+        packages:
+            - g++-4.8
+            - gcc-4.8
+            - libboost1.55-dev
+            - libboost-filesystem1.55-dev
+            - libboost-program-options1.55-dev
+            - libgdal-dev
+            - libproj-dev
+            - libsparsehash-dev
 
 install:
- - cd ..
- - git clone https://github.com/osmcode/libosmium.git
- - git clone https://github.com/scrosby/OSM-binary.git
- - cd OSM-binary/src
- - make
- - sudo make install
+    - cd ..
+    - git clone --quiet --depth 1 https://github.com/osmcode/libosmium.git
 
 script:
- - cd $TRAVIS_BUILD_DIR
- - mkdir build
- - cd build
- # GCC ignores the pragmas in the code that disable the "return-type" warning selectively, so use this workaround
- - if [ "${CXX}" = 'g++' ]; then WORKAROUND="-DCMAKE_CXX_FLAGS=-Wno-return-type"; else WORKAROUND=""; fi
- - cmake -LA -DCMAKE_BUILD_TYPE=${CONFIGURATION} ${WORKAROUND} ..
- - make VERBOSE=1
- # build and test each subproject by itself
- - cd $TRAVIS_BUILD_DIR
- - ./cmake/build_subprojects.sh ${CONFIGURATION} ${WORKAROUND}
+    - cd $TRAVIS_BUILD_DIR
+    - mkdir build
+    - cd build
+    # GCC ignores the pragmas in the code that disable the "return-type" warning selectively, so use this workaround
+    - if [ "${CXX}" = 'g++' ]; then WORKAROUND="-DCMAKE_CXX_FLAGS=-Wno-return-type"; else WORKAROUND=""; fi
+    - if [ "${CXX}" = 'g++' ]; then CXX=g++-4.8; CC=gcc-4.8; fi
+    - cmake -LA -DCMAKE_BUILD_TYPE=${BUILD_TYPE} ${WORKAROUND} ..
+    - make VERBOSE=1
+    # build and test each subproject by itself
+    - cd $TRAVIS_BUILD_DIR
+    - ./cmake/build_subprojects.sh ${BUILD_TYPE} ${WORKAROUND}
 
