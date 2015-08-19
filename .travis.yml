@@ -40,16 +40,19 @@ addons:
             - libsparsehash-dev
 
 install:
-    - cd ..
-    - git clone --quiet --depth 1 https://github.com/osmcode/libosmium.git
+    - git clone --quiet --depth 1 https://github.com/osmcode/libosmium.git ../libosmium
 
 script:
-    - cd $TRAVIS_BUILD_DIR
     - mkdir build
     - cd build
     # GCC ignores the pragmas in the code that disable the "return-type" warning selectively, so use this workaround
-    - if [ "${CXX}" = 'g++' ]; then WORKAROUND="-DCMAKE_CXX_FLAGS=-Wno-return-type"; else WORKAROUND=""; fi
-    - if [ "${CXX}" = 'g++' ]; then CXX=g++-4.8; CC=gcc-4.8; fi
+    - if [ "${CXX}" = 'g++' ]; then
+          CXX=g++-4.8;
+          CC=gcc-4.8;
+          WORKAROUND="-DCMAKE_CXX_FLAGS=-Wno-return-type";
+      else
+          WORKAROUND="";
+      fi
     - cmake -LA -DCMAKE_BUILD_TYPE=${BUILD_TYPE} ${WORKAROUND} ..
     - make VERBOSE=1
     # build and test each subproject by itself
