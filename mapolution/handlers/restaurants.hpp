@@ -11,11 +11,6 @@ public:
         GeomHandler(factory, ds),
         m_layer(dataset(), "restaurants_" + date, wkbPoint) {
         m_layer.add_field("id", OFTReal, 10);
-        m_layer.StartTransaction();
-    }
-
-    ~RestaurantsHandler() {
-        m_layer.CommitTransaction();
     }
 
     void node(const osmium::Node& node) {

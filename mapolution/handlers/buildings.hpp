@@ -11,11 +11,9 @@ public:
         GeomHandler(factory, ds),
         m_layer(dataset(), "buildings_" + date, wkbMultiPolygon) {
         m_layer.add_field("id", OFTInteger, 10);
-        m_layer.StartTransaction();
     }
 
     ~BuildingsHandler() {
-        m_layer.CommitTransaction();
         if (m_layer.get()->GetFeatureCount() == 0) {
             std::cerr << "WARNING: No features in layer '" << m_layer.get()->GetName() << "'.\n";
         }

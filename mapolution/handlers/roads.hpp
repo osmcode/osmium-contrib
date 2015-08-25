@@ -12,11 +12,6 @@ public:
         m_layer(dataset(), "roads_" + date, wkbLineString) {
         m_layer.add_field("id", OFTInteger, 10);
         m_layer.add_field("type", OFTString, 30);
-        m_layer.StartTransaction();
-    }
-
-    ~RoadsHandler() {
-        m_layer.CommitTransaction();
     }
 
     void way(const osmium::Way& way) {
