@@ -53,9 +53,15 @@ script:
       else
           WORKAROUND="";
       fi
+    - echo "travis_fold:start:cmake\nRunning cmake..."
     - cmake -LA -DCMAKE_BUILD_TYPE=${BUILD_TYPE} ${WORKAROUND} ..
+    - echo "travis_fold:end:cmake"
+    - echo "travis_fold:start:make\nRunning make..."
     - make VERBOSE=1
+    - echo "travis_fold:end:make"
     # build and test each subproject by itself
     - cd $TRAVIS_BUILD_DIR
+    - echo "travis_fold:start:sub\nBuilding subprojects by themselves..."
     - ./cmake/build_subprojects.sh ${BUILD_TYPE} ${WORKAROUND}
+    - echo "travis_fold:end:sub"
 
