@@ -9,10 +9,13 @@ cmake_minimum_required(VERSION 2.8.5)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake")
 
 find_package(Boost REQUIRED COMPONENTS program_options)
-include_directories(${Boost_INCLUDE_DIRS})
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
+if(NOT DEFINED CMAKE_PREFIX_PATH)
+    set(CMAKE_PREFIX_PATH "../../libosmium")
+endif()
 find_package(Osmium REQUIRED COMPONENTS io gdal proj sparsehash)
-include_directories(${OSMIUM_INCLUDE_DIRS})
+include_directories(SYSTEM ${OSMIUM_INCLUDE_DIRS})
 
 include(common)
 

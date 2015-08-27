@@ -16,10 +16,10 @@ project(osmium-contrib)
 include(common)
 
 find_package(Boost REQUIRED COMPONENTS program_options system filesystem)
-include_directories(${Boost_INCLUDE_DIRS})
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
 find_package(Osmium REQUIRED COMPONENTS io gdal proj sparsehash)
-include_directories(${OSMIUM_INCLUDE_DIRS})
+include_directories(SYSTEM ${OSMIUM_INCLUDE_DIRS})
 
 
 #-----------------------------------------------------------------------------
