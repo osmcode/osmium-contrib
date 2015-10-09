@@ -29,10 +29,8 @@ file(GLOB SOURCES *.cpp *.hpp)
 add_executable(${PROG} ${SOURCES})
 target_link_libraries(${PROG} ${Boost_LIBRARIES} ${OSMIUM_LIBRARIES})
 
-add_test(NAME road_length
-         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-         COMMAND road_length ${CMAKE_CURRENT_SOURCE_DIR}/test/road.osm
-)
+add_test(road_length road_length ${CMAKE_CURRENT_SOURCE_DIR}/test/road.osm)
+
 set_tests_properties(road_length PROPERTIES
                      PASS_REGULAR_EXPRESSION "^Length: 0\\.405.*km\n$"
 )

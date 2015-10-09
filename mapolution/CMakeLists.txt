@@ -36,10 +36,8 @@ file(GLOB SOURCES *.cpp *.hpp)
 add_executable(${PROG} ${SOURCES})
 target_link_libraries(${PROG} ${Boost_LIBRARIES} ${OSMIUM_LIBRARIES})
 
-add_test(NAME mapolution_help
-         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-         COMMAND mapolution --help
-)
+add_test(mapolution_help mapolution --help)
+
 set_tests_properties(mapolution_help PROPERTIES
                      PASS_REGULAR_EXPRESSION "Usage: mapolution"
 )

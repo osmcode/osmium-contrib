@@ -29,10 +29,8 @@ file(GLOB SOURCES *.cpp *.hpp)
 add_executable(${PROG} ${SOURCES})
 target_link_libraries(${PROG} ${Boost_LIBRARIES} ${OSMIUM_LIBRARIES})
 
-add_test(NAME node_density_help
-         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-         COMMAND node_density --help
-)
+add_test(node_density_help node_density --help)
+
 set_tests_properties(node_density_help PROPERTIES
                      PASS_REGULAR_EXPRESSION "Usage: node_density"
 )
