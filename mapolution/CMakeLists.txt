@@ -3,11 +3,11 @@
 #  Single example osmium-contrib CMakeLists.txt
 #
 #----------------------------------------------------------------------
-include(add_dev_configuration)
-project(osmium-mapolution)
-
 cmake_minimum_required(VERSION 2.8.5)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake")
+
+include(add_dev_configuration)
+project(osmium-mapolution)
 
 find_package(Boost REQUIRED COMPONENTS program_options filesystem system)
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
