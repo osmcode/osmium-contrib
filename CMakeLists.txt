@@ -11,6 +11,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 
 #-----------------------------------------------------------------------------
+include(add_dev_configuration)
 project(osmium-contrib)
 
 include(common)
