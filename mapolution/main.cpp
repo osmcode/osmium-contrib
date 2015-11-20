@@ -46,9 +46,7 @@ OGREnvelope extract(
         auto dend   = diff_iterator(relations, relations);
 
         std::for_each(dbegin, dend, [point_in_time, &fbuffer](const osmium::DiffObject& d) {
-            if (((d.end_time() == 0 || d.end_time() > point_in_time) &&
-                    d.start_time() <= point_in_time) &&
-                d.curr().visible()) {
+            if (d.is_visible_at(point_in_time)) {
                 fbuffer.add_item(d.curr());
                 fbuffer.commit();
             }
@@ -65,9 +63,7 @@ OGREnvelope extract(
         auto dend   = diff_iterator(end, end);
 
         std::for_each(dbegin, dend, [point_in_time, &rbuffer](const osmium::DiffObject& d) {
-            if (((d.end_time() == 0 || d.end_time() > point_in_time) &&
-                    d.start_time() <= point_in_time) &&
-                d.curr().visible()) {
+            if (d.is_visible_at(point_in_time)) {
                 rbuffer.add_item(d.curr());
                 rbuffer.commit();
             }
