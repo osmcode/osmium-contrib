@@ -150,6 +150,12 @@ void check_and_create_directory(const std::string& directory) {
     }
 }
 
+osmium::Timestamp day_start(const osmium::Timestamp& timestamp) {
+    const int seconds_per_day = 24 * 60 * 60;
+    auto time = uint32_t(timestamp) / seconds_per_day * seconds_per_day;
+    return osmium::Timestamp(time);
+}
+
 int main(int argc, char* argv[]) {
     Options options(argc, argv);
 
@@ -187,8 +193,6 @@ int main(int argc, char* argv[]) {
         return obj.type() == osmium::item_type::relation;
     });
 
-    const int seconds_per_day = 24 * 60 * 60;
-
     osmium::Timestamp start_time = options.start_time;
     osmium::Timestamp end_time = options.end_time;
     if (!start_time || !end_time) {
@@ -197,11 +201,11 @@ int main(int argc, char* argv[]) {
 
         if (!start_time) {
             options.vout << "No start time on command line, got it from file contents\n";
-            start_time = min_max.first / seconds_per_day * seconds_per_day;
+            start_time = day_start(min_max.first);
         }
         if (!end_time) {
             options.vout << "No end time on command line, got it from file contents\n";
-            end_time = min_max.second / seconds_per_day * seconds_per_day;
+            end_time = day_start(min_max.second);
         }
     }
 
@@ -211,6 +215,7 @@ int main(int argc, char* argv[]) {
     osmium::geom::OGRFactory<osmium::geom::Projection> factory(osmium::geom::Projection(options.epsg));
 
     OGREnvelope envelope_all;
+    const int seconds_per_day = 24 * 60 * 60;
     auto step = options.time_step * seconds_per_day;
     for (osmium::Timestamp t = start_time; t <= end_time; t += step) {
         OGREnvelope env = extract(
