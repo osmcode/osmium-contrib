@@ -14,8 +14,8 @@ public:
     }
 
     ~BuildingsHandler() {
-        if (m_layer.get()->GetFeatureCount() == 0) {
-            std::cerr << "WARNING: No features in layer '" << m_layer.get()->GetName() << "'.\n";
+        if (m_layer.get().GetFeatureCount() == 0) {
+            std::cerr << "WARNING: No features in layer '" << m_layer.get().GetName() << "'.\n";
         }
     }
 
