@@ -59,6 +59,7 @@ script:
     - echo "travis_fold:start:make\nRunning make..."
     - make VERBOSE=1
     - echo "travis_fold:end:make"
+    - ctest
     # build and test each subproject by itself
     - cd $TRAVIS_BUILD_DIR
     - echo "travis_fold:start:sub\nBuilding subprojects by themselves..."
