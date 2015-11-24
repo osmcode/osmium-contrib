@@ -3,10 +3,11 @@
 #  Single example osmium-contrib CMakeLists.txt
 #
 #----------------------------------------------------------------------
-project(osmium-road-length)
-
 cmake_minimum_required(VERSION 2.8.5)
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake")
+
+include(add_dev_configuration)
+project(osmium-road-length)
 
 find_package(Boost REQUIRED)
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
@@ -28,10 +29,8 @@ file(GLOB SOURCES *.cpp *.hpp)
 add_executable(${PROG} ${SOURCES})
 target_link_libraries(${PROG} ${Boost_LIBRARIES} ${OSMIUM_LIBRARIES})
 
-add_test(NAME road_length
-         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-         COMMAND road_length ${CMAKE_CURRENT_SOURCE_DIR}/test/road.osm
-)
+add_test(road_length road_length ${CMAKE_CURRENT_SOURCE_DIR}/test/road.osm)
+
 set_tests_properties(road_length PROPERTIES
                      PASS_REGULAR_EXPRESSION "^Length: 0\\.405.*km\n$"
 )

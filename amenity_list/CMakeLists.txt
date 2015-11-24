@@ -3,10 +3,11 @@
 #  Single example osmium-contrib CMakeLists.txt
 #
 #----------------------------------------------------------------------
-project(osmium-amenity-list)
-
 cmake_minimum_required(VERSION 2.8.5)
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake")
+
+include(add_dev_configuration)
+project(osmium-amenity-list)
 
 find_package(Boost REQUIRED)
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
@@ -28,10 +29,7 @@ file(GLOB SOURCES *.cpp *.hpp)
 add_executable(${PROG} ${SOURCES})
 target_link_libraries(${PROG} ${Boost_LIBRARIES} ${OSMIUM_LIBRARIES})
 
-add_test(NAME amenity_list_node
-         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-         COMMAND amenity_list ${CMAKE_CURRENT_SOURCE_DIR}/test/node.osm
-)
+add_test(amenity_list_node amenity_list  ${CMAKE_CURRENT_SOURCE_DIR}/test/node.osm)
 set_tests_properties(amenity_list_node PROPERTIES
                      PASS_REGULAR_EXPRESSION "  8\\.8721, 53\\.0966 post_office"
 )

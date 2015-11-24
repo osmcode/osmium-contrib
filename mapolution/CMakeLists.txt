@@ -3,10 +3,11 @@
 #  Single example osmium-contrib CMakeLists.txt
 #
 #----------------------------------------------------------------------
-project(osmium-mapolution)
-
 cmake_minimum_required(VERSION 2.8.5)
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake")
+
+include(add_dev_configuration)
+project(osmium-mapolution)
 
 find_package(Boost REQUIRED COMPONENTS program_options filesystem system)
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
@@ -35,10 +36,8 @@ file(GLOB SOURCES *.cpp *.hpp)
 add_executable(${PROG} ${SOURCES})
 target_link_libraries(${PROG} ${Boost_LIBRARIES} ${OSMIUM_LIBRARIES})
 
-add_test(NAME mapolution_help
-         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-         COMMAND mapolution --help
-)
+add_test(mapolution_help mapolution --help)
+
 set_tests_properties(mapolution_help PROPERTIES
                      PASS_REGULAR_EXPRESSION "Usage: mapolution"
 )
