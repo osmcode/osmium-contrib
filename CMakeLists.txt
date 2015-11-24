@@ -24,3 +24,7 @@ add_subdirectory(pub_names)
 add_subdirectory(road_length)
 
 #-----------------------------------------------------------------------------
+include(CppcheckTarget)
+add_cppcheck_target(*/*.*pp)
+
+#-----------------------------------------------------------------------------
