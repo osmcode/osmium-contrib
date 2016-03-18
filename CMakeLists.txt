@@ -17,6 +17,7 @@ project(osmium-contrib)
 enable_testing()
 
 add_subdirectory(amenity_list)
+add_subdirectory(duplicate_nodes)
 add_subdirectory(export_to_wkt)
 add_subdirectory(mapolution)
 add_subdirectory(node_density)
