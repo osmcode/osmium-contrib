@@ -21,8 +21,6 @@ add_subdirectory(duplicate_nodes)
 add_subdirectory(export_to_wkt)
 add_subdirectory(mapolution)
 add_subdirectory(node_density)
-add_subdirectory(pub_names)
-add_subdirectory(road_length)
 
 #-----------------------------------------------------------------------------
 include(CppcheckTarget)
