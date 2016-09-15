@@ -53,7 +53,7 @@ public:
         m_filename(build_filename(dirname, n)),
         m_fd(::open(m_filename.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0666)) {
         if (m_fd < 0) {
-            throw std::system_error(errno, std::system_category(), std::string("Can't open file '") + m_filename + "'");
+            throw std::system_error{errno, std::system_category(), std::string{"Can't open file '"} + m_filename + "'"};
         }
         m_data.reserve(max_bucket_size);
     }
@@ -79,9 +79,9 @@ public:
             return;
         }
 
-        auto length = ::write(m_fd, m_data.data(), m_data.size());
+        const auto length = ::write(m_fd, m_data.data(), m_data.size());
         if (length != long(m_data.size())) {
-            throw std::system_error(errno, std::system_category(), std::string("can't write to file '") + m_filename + "'");
+            throw std::system_error{errno, std::system_category(), std::string{"can't write to file '"} + m_filename + "'"};
         }
 
         m_data.clear();
@@ -111,7 +111,7 @@ public:
     }
 
     void node(const osmium::Node& node) {
-        auto bucket_num = node.location().x() & (num_buckets-1);
+        const auto bucket_num = node.location().x() & (num_buckets-1);
         m_buckets[bucket_num].set(node.location());
     }
 
@@ -137,12 +137,12 @@ std::vector<osmium::Location> find_duplicates(const std::string& tmp_directory) 
     std::vector<osmium::Location> duplicates;
 
     for (int i = 0; i < num_buckets; ++i) {
-        auto filename = build_filename(tmp_directory, i);
+        const auto filename = build_filename(tmp_directory, i);
         int fd = ::open(filename.c_str(), O_RDONLY);
         if (fd < 0) {
-            throw std::system_error(errno, std::system_category(), std::string("Can't open file '") + filename + "'");
+            throw std::system_error{errno, std::system_category(), std::string{"Can't open file '"} + filename + "'"};
         }
-        auto file_size = osmium::util::file_size(fd);
+        const auto file_size = osmium::util::file_size(fd);
         osmium::util::TypedMemoryMapping<osmium::Location> m_mapping {file_size / sizeof(osmium::Location), osmium::util::MemoryMapping::mapping_mode::write_private, fd };
 
         std::sort(m_mapping.begin(), m_mapping.end());
@@ -156,25 +156,25 @@ std::vector<osmium::Location> find_duplicates(const std::string& tmp_directory) 
     }
 
     std::sort(duplicates.begin(), duplicates.end());
-    auto last = std::unique(duplicates.begin(), duplicates.end());
+    const auto last = std::unique(duplicates.begin(), duplicates.end());
     duplicates.erase(last, duplicates.end());
 
     return duplicates;
 }
 
 int get_nodes_at_locations(const osmium::io::File& input_file, const osmium::io::File& output_file, const std::vector<osmium::Location>& locations) {
-    osmium::io::Reader reader { input_file, osmium::osm_entity_bits::node };
+    osmium::io::Reader reader{input_file, osmium::osm_entity_bits::node};
 
-    typedef osmium::io::InputIterator<osmium::io::Reader, osmium::Node> node_iterator_type;
+    using node_iterator_type = osmium::io::InputIterator<osmium::io::Reader, osmium::Node>;
 
-    node_iterator_type first { reader };
+    node_iterator_type first{reader};
     node_iterator_type last;
 
     osmium::io::Header header;
     header.set("generator", "osm-qa");
 
-    osmium::io::Writer writer { output_file, header, osmium::io::overwrite::allow };
-    osmium::io::OutputIterator<osmium::io::Writer> out { writer };
+    osmium::io::Writer writer{output_file, header, osmium::io::overwrite::allow};
+    osmium::io::OutputIterator<osmium::io::Writer> out{writer};
 
     int num_nodes = 0;
     std::copy_if(first, last, out, [&locations, &num_nodes](osmium::Node& node) {
@@ -197,13 +197,13 @@ int main(int argc, char* argv[]) {
 
     if (argc != 3) {
         std::cerr << "Usage: " << argv[0] << " INPUT_FILE OUTPUT_FILE\n";
-        exit(2);
+        std::exit(2);
     }
 
     std::string tmp_directory = ".";
 
-    osmium::io::File input_file { argv[1] };
-    osmium::io::File output_file { argv[2] };
+    osmium::io::File input_file{argv[1]};
+    osmium::io::File output_file{argv[2]};
 
     vout << "Extracting locations...\n";
     extract_locations(input_file, tmp_directory);
@@ -213,13 +213,13 @@ int main(int argc, char* argv[]) {
 
     if (locations.empty()) {
         vout << "No duplicates found. Done.\n";
-        exit(0);
+        std::exit(0);
     }
 
     vout << "Found " << locations.size() << " location(s).\n";
 
     vout << "Get nodes for duplicates...\n";
-    auto num_nodes = get_nodes_at_locations(input_file, output_file, locations);
+    const auto num_nodes = get_nodes_at_locations(input_file, output_file, locations);
     vout << "Found " << num_nodes << " nodes at those " << locations.size() << " locations.\n";
 
     osmium::MemoryUsage memory_usage;
@@ -229,6 +229,6 @@ int main(int argc, char* argv[]) {
 
     vout << "Done.\n";
 
-    exit(1);
+    std::exit(1);
 }
 

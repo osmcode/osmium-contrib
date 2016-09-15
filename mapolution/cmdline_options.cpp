@@ -8,17 +8,17 @@
 osmium::Timestamp Options::parse_time(std::string t) {
     try {
         t.append("T00:00:00Z");
-        osmium::Timestamp ts(t.c_str());
+        osmium::Timestamp ts{t.c_str()};
 
-        if (ts < osmium::Timestamp("2005-01-01T00:00:00Z")) {
+        if (ts < osmium::Timestamp{"2005-01-01T00:00:00Z"}) {
             std::cerr << "Dates before 2005 don't make sense, because OSM didn't exist then.\n";
-            exit(return_code::fatal);
+            std::exit(return_code::fatal);
         }
 
         return ts;
-    } catch (std::invalid_argument&) {
+    } catch (const std::invalid_argument&) {
         std::cerr << "Can't understand the date, format should be YYYY-MM-DD.\n";
-        exit(return_code::fatal);
+        std::exit(return_code::fatal);
     }
 }
 
@@ -60,7 +60,7 @@ Options::Options(int argc, char* argv[]) {
 
         if (vm.count("help")) {
             std::cout << desc << "\n";
-            exit(0);
+            std::exit(0);
         }
 
         if (vm.count("quiet")) {
@@ -99,9 +99,9 @@ Options::Options(int argc, char* argv[]) {
             time_step = vm["time-step"].as<int>();
         }
 
-    } catch (boost::program_options::error& e) {
-        std::cerr << "Error parsing command line: " << e.what() << std::endl;
-        exit(return_code::fatal);
+    } catch (const boost::program_options::error& e) {
+        std::cerr << "Error parsing command line: " << e.what() << '\n';
+        std::exit(return_code::fatal);
     }
 }
 

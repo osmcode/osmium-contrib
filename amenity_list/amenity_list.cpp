@@ -6,8 +6,8 @@
 
 #include <osmium/index/map/sparse_mem_array.hpp>
 #include <osmium/handler/node_locations_for_ways.hpp>
-typedef osmium::index::map::SparseMemArray<osmium::unsigned_object_id_type, osmium::Location> index_type;
-typedef osmium::handler::NodeLocationsForWays<index_type> location_handler_type;
+using index_type = osmium::index::map::SparseMemArray<osmium::unsigned_object_id_type, osmium::Location>;
+using location_handler_type = osmium::handler::NodeLocationsForWays<index_type>;
 
 #include <osmium/area/assembler.hpp>
 #include <osmium/area/multipolygon_collector.hpp>
@@ -56,14 +56,14 @@ public:
 int main(int argc, char* argv[]) {
     if (argc != 2) {
         std::cerr << "Usage: " << argv[0] << " OSMFILE\n";
-        exit(1);
+        std::exit(1);
     }
 
     osmium::area::Assembler::config_type assembler_config;
-    osmium::area::MultipolygonCollector<osmium::area::Assembler> collector(assembler_config);
+    osmium::area::MultipolygonCollector<osmium::area::Assembler> collector{assembler_config};
 
     std::cerr << "Pass 1...\n";
-    osmium::io::Reader reader1(argv[1]);
+    osmium::io::Reader reader1{argv[1]};
     collector.read_relations(reader1);
     reader1.close();
     std::cerr << "Pass 1 done\n";
@@ -75,7 +75,7 @@ int main(int argc, char* argv[]) {
     AmenityHandler data_handler;
 
     std::cerr << "Pass 2...\n";
-    osmium::io::Reader reader2(argv[1]);
+    osmium::io::Reader reader2{argv[1]};
 
     osmium::apply(reader2, location_handler, data_handler, collector.handler([&data_handler](const osmium::memory::Buffer& area_buffer) {
         osmium::apply(area_buffer, data_handler);

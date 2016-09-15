@@ -7,6 +7,8 @@
 #include <cstdio>
 #include <iostream>
 #include <limits>
+#include <string>
+#include <vector>
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wold-style-cast"
@@ -25,7 +27,7 @@
 
 #include "cmdline_options.hpp"
 
-typedef uint32_t node_count_type;
+using node_count_type = uint32_t;
 
 class NodeDensityHandler : public osmium::handler::Handler {
 
@@ -50,7 +52,7 @@ class NodeDensityHandler : public osmium::handler::Handler {
 
     void record_location(const osmium::Location& location) {
         if (m_options.box.contains(location)) {
-            osmium::geom::Coordinates c = m_projection(location);
+            const osmium::geom::Coordinates c = m_projection(location);
             const int x = in_range(0, (c.x - m_bottom_left.x) * m_factor_x, m_width  - 1);
             const int y = in_range(0, (c.y - m_top_right.y)   * m_factor_y, m_height - 1);
             const int n = y * m_width + x;
@@ -84,7 +86,7 @@ public:
         GDALDriver* driver = GetGDALDriverManager()->GetDriverByName("GTiff");
         if (!driver) {
             std::cerr << "Can't initalize GDAL GTiff driver.\n";
-            exit(return_code::fatal);
+            std::exit(return_code::fatal);
         }
 
         std::vector<std::string> options;
@@ -100,7 +102,7 @@ public:
         GDALDataset* dataset = driver->Create(m_options.output_filename.c_str(), m_width, m_height, 1, GDT_UInt32, dataset_options.get());
         if (!dataset) {
             std::cerr << "Can't create output file '" << m_options.output_filename <<"'.\n";
-            exit(return_code::error);
+            std::exit(return_code::error);
         }
 
         dataset->SetMetadataItem("TIFFTAG_IMAGEDESCRIPTION", "OpenStreetMap node density");
@@ -123,7 +125,7 @@ public:
         assert(band);
         if (band->RasterIO(GF_Write, 0, 0, m_width, m_height, m_node_count.get(), m_width, m_height, GDT_UInt32, 0, 0) != CE_None) {
             std::cerr << "Error writing to output file '" << m_options.output_filename <<"'.\n";
-            exit(return_code::error);
+            std::exit(return_code::error);
         }
 
         if (m_options.build_overview) {
@@ -139,12 +141,12 @@ public:
 }; // class NodeDensityHandler
 
 int main(int argc, char* argv[]) {
-    Options options(argc, argv);
+    Options options{argc, argv};
 
     if (options.input_filename == "-" && options.input_format.empty()) {
         std::cerr << "When reading from STDIN you have to give the input format with --format, -f.\n";
         std::cerr << "Use one of: 'pbf', 'osm' (uncompressed XML format), 'osm.bz2' (bz2-compressed XML).\n";
-        exit(return_code::fatal);
+        std::exit(return_code::fatal);
     }
 
     if (options.epsg == 3857) {
@@ -179,10 +181,10 @@ int main(int argc, char* argv[]) {
     options.vout << "  Compression:              " << options.compression_format << "\n";
     options.vout << "  Build overviews:          " << (options.build_overview ? "yes" : "no") << "\n";
 
-    NodeDensityHandler handler(options);
+    NodeDensityHandler handler{options};
 
-    osmium::io::File file(options.input_filename, options.input_format);
-    osmium::io::Reader reader(file, osmium::osm_entity_bits::node);
+    osmium::io::File file{options.input_filename, options.input_format};
+    osmium::io::Reader reader{file, osmium::osm_entity_bits::node};
 
     options.vout << "Counting nodes...\n";
     osmium::apply(reader, handler);

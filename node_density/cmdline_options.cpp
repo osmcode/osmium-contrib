@@ -11,7 +11,7 @@ Options::Options(int argc, char* argv[]) {
     po::variables_map vm;
 
     try {
-        po::options_description cmdline("Options");
+        po::options_description cmdline{"Options"};
         cmdline.add_options()
             ("help,h", "Print this help message")
             ("quiet,q", "Suppress verbose output messages")
@@ -29,12 +29,12 @@ Options::Options(int argc, char* argv[]) {
             ("build-overviews", "Build overview images")
         ;
 
-        po::options_description hidden("Hidden options");
+        po::options_description hidden{"Hidden options"};
         hidden.add_options()
             ("input-filename", po::value<std::string>(), "Input file")
         ;
 
-        po::options_description desc("Usage: node_density [OPTIONS] OSMFILE\nCreate GeoTIFF with node density in OSM data");
+        po::options_description desc{"Usage: node_density [OPTIONS] OSMFILE\nCreate GeoTIFF with node density in OSM data"};
         desc.add(cmdline);
 
         po::options_description all;
@@ -48,7 +48,7 @@ Options::Options(int argc, char* argv[]) {
 
         if (vm.count("help")) {
             std::cout << desc << "\n";
-            exit(0);
+            std::exit(0);
         }
 
         if (vm.count("quiet")) {
@@ -69,7 +69,7 @@ Options::Options(int argc, char* argv[]) {
 
         if (vm.count("srs") && vm.count("epsg")) {
             std::cerr << "Use at most one of the options --epsg,-e and --srs,-s\n";
-            exit(return_code::fatal);
+            std::exit(return_code::fatal);
         }
 
         if (vm.count("srs")) {
@@ -111,17 +111,17 @@ Options::Options(int argc, char* argv[]) {
         }
 
         if (vm.count("compression")) {
-            std::string c = vm["compression"].as<std::string>();
+            const std::string c{vm["compression"].as<std::string>()};
             if (c == "NONE" || c == "LZW" || c == "DEFLATE") {
                 compression_format = c;
             } else {
                 std::cerr << "Unknown compression format '" << c << "'\n";
-                exit(return_code::fatal);
+                std::exit(return_code::fatal);
             }
         }
-    } catch (boost::program_options::error& e) {
-        std::cerr << "Error parsing command line: " << e.what() << std::endl;
-        exit(return_code::fatal);
+    } catch (const boost::program_options::error& e) {
+        std::cerr << "Error parsing command line: " << e.what() << '\n';
+        std::exit(return_code::fatal);
     }
 }
 

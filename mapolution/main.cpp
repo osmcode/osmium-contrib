@@ -15,8 +15,8 @@
 
 #include <osmium/index/map/sparse_mem_array.hpp>
 #include <osmium/handler/node_locations_for_ways.hpp>
-typedef osmium::index::map::SparseMemArray<osmium::unsigned_object_id_type, osmium::Location> index_type;
-typedef osmium::handler::NodeLocationsForWays<index_type> location_handler_type;
+using index_type = osmium::index::map::SparseMemArray<osmium::unsigned_object_id_type, osmium::Location>;
+using location_handler_type = osmium::handler::NodeLocationsForWays<index_type>;
 
 #include "cmdline_options.hpp"
 #include "geom_handler.hpp"
@@ -39,11 +39,11 @@ OGREnvelope extract(
     options.vout << "  Filtering data...\n";
 
     // nodes and ways
-    typedef osmium::DiffIterator<osmium::memory::Buffer::t_iterator<osmium::OSMObject>> diff_iterator;
-    osmium::memory::Buffer fbuffer(initial_buffer_size, osmium::memory::Buffer::auto_grow::yes);
+    using diff_iterator = osmium::DiffIterator<osmium::memory::Buffer::t_iterator<osmium::OSMObject>>;
+    osmium::memory::Buffer fbuffer{initial_buffer_size, osmium::memory::Buffer::auto_grow::yes};
     {
-        auto dbegin = diff_iterator(begin, relations);
-        auto dend   = diff_iterator(relations, relations);
+        const auto dbegin = diff_iterator(begin, relations);
+        const auto dend   = diff_iterator(relations, relations);
 
         std::for_each(dbegin, dend, [point_in_time, &fbuffer](const osmium::DiffObject& d) {
             if (d.is_visible_at(point_in_time)) {
@@ -59,8 +59,8 @@ OGREnvelope extract(
     // relations
     osmium::memory::Buffer rbuffer(initial_buffer_size, osmium::memory::Buffer::auto_grow::yes);
     {
-        auto dbegin = diff_iterator(relations, end);
-        auto dend   = diff_iterator(end, end);
+        const auto dbegin = diff_iterator(relations, end);
+        const auto dend   = diff_iterator(end, end);
 
         std::for_each(dbegin, dend, [point_in_time, &rbuffer](const osmium::DiffObject& d) {
             if (d.is_visible_at(point_in_time)) {
@@ -71,7 +71,7 @@ OGREnvelope extract(
     }
 
     osmium::area::Assembler::config_type assembler_config;
-    osmium::area::MultipolygonCollector<osmium::area::Assembler> collector(assembler_config);
+    osmium::area::MultipolygonCollector<osmium::area::Assembler> collector{assembler_config};
 
     options.vout << "  Reading relations...\n";
     collector.read_relations(rbuffer.cbegin(), rbuffer.cend());
@@ -81,7 +81,7 @@ OGREnvelope extract(
     location_handler.ignore_errors();
 
     options.vout << "  Creating geometries...\n";
-    std::string date = point_in_time.to_iso().substr(0, 10);
+    const std::string date = point_in_time.to_iso().substr(0, 10);
 
     std::vector<std::string> datasource_options;
     std::string datasource_name = options.output_directory + "/" + date;
@@ -112,7 +112,7 @@ OGREnvelope extract(
     return geom_handler.envelope();
 }
 
-typedef std::pair<osmium::Timestamp, osmium::Timestamp> tspair;
+using tspair = std::pair<osmium::Timestamp, osmium::Timestamp>;
 template <class TIter>
 tspair min_max_timestamp(TIter begin, TIter end) {
     tspair init = std::make_pair(osmium::end_of_time(), osmium::start_of_time());
@@ -128,32 +128,32 @@ tspair min_max_timestamp(TIter begin, TIter end) {
 }
 
 void check_and_create_directory(const std::string& directory) {
-    boost::filesystem::path dir(directory);
+    boost::filesystem::path dir{directory};
 
     try {
         boost::filesystem::create_directories(dir);
-    } catch (boost::filesystem::filesystem_error& e) {
+    } catch (const boost::filesystem::filesystem_error& e) {
         std::cerr << "Error creating output directory '"
                   << directory
                   << "': "
                   << e.what()
                   << ".\n";
-        exit(return_code::fatal);
+        std::exit(return_code::fatal);
     }
 
-    int num_entries = std::distance(boost::filesystem::directory_iterator(dir),
-                                    boost::filesystem::directory_iterator());
+    const int num_entries = std::distance(boost::filesystem::directory_iterator(dir),
+                                          boost::filesystem::directory_iterator());
 
     if (num_entries != 0) {
         std::cerr << "Output directory '" << directory << "' is not empty.\n";
-        exit(return_code::fatal);
+        std::exit(return_code::fatal);
     }
 }
 
 osmium::Timestamp day_start(const osmium::Timestamp& timestamp) {
     const int seconds_per_day = 24 * 60 * 60;
-    auto time = uint32_t(timestamp) / seconds_per_day * seconds_per_day;
-    return osmium::Timestamp(time);
+    const auto time = uint32_t(timestamp) / seconds_per_day * seconds_per_day;
+    return osmium::Timestamp{time};
 }
 
 int main(int argc, char* argv[]) {
@@ -183,7 +183,7 @@ int main(int argc, char* argv[]) {
     check_and_create_directory(options.output_directory);
 
     options.vout << "Reading input file into memory...\n";
-    osmium::io::File file(options.input_filename, options.input_format);
+    osmium::io::File file{options.input_filename, options.input_format};
     osmium::memory::Buffer ibuffer = osmium::io::read_file(file, osmium::osm_entity_bits::object);
     options.vout << "Done. Input data needs " << (ibuffer.committed() / (1024 * 1024)) << " MBytes.\n";
 
@@ -212,11 +212,11 @@ int main(int argc, char* argv[]) {
     options.vout << "Start time: " << start_time << "\n";
     options.vout << "End time  : " << end_time << "\n";
 
-    osmium::geom::OGRFactory<osmium::geom::Projection> factory(osmium::geom::Projection(options.epsg));
+    osmium::geom::OGRFactory<osmium::geom::Projection> factory{osmium::geom::Projection{options.epsg}};
 
     OGREnvelope envelope_all;
     const int seconds_per_day = 24 * 60 * 60;
-    auto step = options.time_step * seconds_per_day;
+    const auto step = options.time_step * seconds_per_day;
     for (osmium::Timestamp t = start_time; t <= end_time; t += step) {
         OGREnvelope env = extract(
             options,
@@ -229,7 +229,7 @@ int main(int argc, char* argv[]) {
         envelope_all.Merge(env);
     }
 
-    std::ofstream env_out(options.output_directory + "/bbox", std::ofstream::out);
+    std::ofstream env_out{options.output_directory + "/bbox", std::ofstream::out};
     env_out << std::fixed
             << "XMIN=" << envelope_all.MinX << "\n"
             << "YMIN=" << envelope_all.MinY << "\n"

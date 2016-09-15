@@ -19,16 +19,16 @@ struct Options {
 
     osmium::util::VerboseOutput vout {true};
 
-    std::string input_filename {"-"};
-    std::string output_filename {"out.tif"};
+    std::string input_filename{"-"};
+    std::string output_filename{"out.tif"};
     std::string input_format;
-    std::string compression_format {"LZW"};
+    std::string compression_format{"LZW"};
     bool build_overview = false;
-    std::string srs {"+init=epsg:4326"};
+    std::string srs{"+init=epsg:4326"};
     int epsg = 4326;
     size_t width = 1024;
     size_t height = 512;
-    osmium::Box box {-180, -90, 180, 90};
+    osmium::Box box{-180, -90, 180, 90};
 
     Options(int argc, char* argv[]);
 
