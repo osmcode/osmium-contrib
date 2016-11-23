@@ -16,6 +16,7 @@ project(osmium-contrib)
 
 enable_testing()
 
+add_subdirectory(dense_tiles)
 add_subdirectory(duplicate_nodes)
 add_subdirectory(export_to_wkt)
 add_subdirectory(mapolution)

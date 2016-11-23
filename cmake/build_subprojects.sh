@@ -6,7 +6,7 @@ set -e
 CONFIGURATION=$1
 shift
 
-for project in duplicate_nodes export_to_wkt mapolution node_density; do
+for project in dense_tiles duplicate_nodes export_to_wkt mapolution node_density; do
     cd $project
     mkdir -p build
     cd build
