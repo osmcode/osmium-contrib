@@ -28,13 +28,19 @@ void print_help(const char* progname) {
     std::cerr << "   --help | -h              this help\n";
     std::cerr << "   --zoom <n> | -z <n>      compute for zoom n [14]\n";
     std::cerr << "   --max <n> | -m <n>       list n densest tiles [100000]\n";
-    std::cerr << "   --min_nodes <n> | -M <n> list all tiles with more than n nodes;\n";
-    std::cerr << "                            only relevant if your --max setting would list\n";
-    std::cerr << "                            tiles with less than n nodes\n";
-    std::cerr << "   --all-tiles | -a         list all tiles (overwrites -m)\n";
+    std::cerr << "   --min-nodes <n> | -M <n> list all tiles with more than n nodes;\n";
     std::cerr << "   --single | -s            compute for single tiles, not meta tiles\n";
     std::cerr << "   --count | -c             print number of nodes in each tile\n";
     std::cerr << "   --progress | -p          display progress bar\n";
+    std::cerr << "\n";
+    std::cerr << "Conflict of --max` vs. `--min-nodes` setting:\n";
+    std::cerr << "  In case of a conflict between these two settings, the setting which\n";
+    std::cerr << "  sets the lower number of printed tiles will stop the output of further\n";
+    std::cerr << "  tiles.\n";
+    std::cerr << "  Use `--max 0` (it's a shortcut) to get all tiles printed which\n";
+    std::cerr << "  contain more or equal than `--min-nodes`. Use the `--min-nodes 0` to\n";
+    std::cerr << "  print exactly that number of tiles you requested using the `--max`\n";
+    std::cerr << "  setting (except there are not that much tiles at the zoom level. ;-)\n";
 }
 
 int main(int argc, char* argv[]) {
@@ -45,15 +51,13 @@ int main(int argc, char* argv[]) {
     unsigned int zoom = 14;
     unsigned int effective_zoom;
     unsigned int max = 100000;
-    bool all_tiles = false;
-    unsigned int min_nodes = 0;
+    unsigned int min_nodes = 1;
 
     static struct option long_options[] = {
        { "help",      no_argument,       0, 'h' },
        { "zoom",      required_argument, 0, 'z' },
        { "max",       required_argument, 0, 'm' },
-       { "min_nodes", required_argument, 0, 'M' },
-       { "all-tiles", no_argument,       0, 'a' },
+       { "min-nodes", required_argument, 0, 'M' },
        { "single",    no_argument,       0, 's' },
        { "count",     no_argument,       0, 'c' },
        { "progress",  no_argument,       0, 'p' },
@@ -73,9 +77,6 @@ int main(int argc, char* argv[]) {
                 break;
             case 'M':
                 min_nodes = std::atoi(optarg);
-                break;
-            case 'a':
-                all_tiles = true;
                 break;
             case 'p':
                 enable_progress_bar = true;
@@ -121,6 +122,11 @@ int main(int argc, char* argv[]) {
         effective_zoom -= 3;
     }
 
+    // shortcut for users – `-m 0` prints all tiles
+    if (max == 0) {
+        max = 1 << (2 * effective_zoom);
+    }
+
     // vector holds one counter for each tile
     std::vector<unsigned int> grid(1 << (2 * effective_zoom));
 
@@ -159,7 +165,9 @@ int main(int argc, char* argv[]) {
     for (unsigned int i = 0; i < grid.size(); ++i) {
         if (grid[i]) {
             sorter.emplace_back(grid[i], i);
-        } else {
+        } else if (min_nodes == 0) {
+            // This will add all tiles which contain no nodes. It is useful
+            // if you want a list of all tiles an a list how "large" each tile is.
             sorter.emplace_back(0, i);
         }
     }
@@ -171,8 +179,6 @@ int main(int argc, char* argv[]) {
         return left.first > right.first;
     });
 
-    // set max to maximum number of tiles if sizes of all tiles should be printed
-    if (all_tiles) max = sorter.size();
     // dump first "max" elements of sorter vector
     if (max > sorter.size()) max=sorter.size();
     for (unsigned int i=0; i<max; i++) {
