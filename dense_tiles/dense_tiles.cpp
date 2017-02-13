@@ -22,13 +22,14 @@
 
 void print_help(const char* progname) {
     std::cerr << "Usage: " << progname << " [OPTIONS] OSMFILE\n";
-    std::cerr << "List the (meta) tiles with the highest node density in the input file.\n";
-    std::cerr << "In meta tile mode, which is the default, only coordinates for the upper\n";
-    std::cerr << "left tile in an 8x8 tile block will be output.\n";
+    std::cerr << "List the (meta) tiles in the input file ordered by node density,\n";
+    std::cerr << "highest first. In meta tile mode, which is the default, only\n";
+    std::cerr << "coordinates for the upper left tile in an 8x8 tile block will be\n";
+    std::cerr << "output.\n";
     std::cerr << "   --help | -h              this help\n";
     std::cerr << "   --zoom <n> | -z <n>      compute for zoom n [14]\n";
-    std::cerr << "   --max <n> | -m <n>       list n densest tiles [100000]\n";
-    std::cerr << "   --min-nodes <n> | -M <n> list all tiles with more than n nodes;\n";
+    std::cerr << "   --max <n> | -m <n>       list a maximum of n tiles [100000]\n";
+    std::cerr << "   --min-nodes <n> | -M <n> list tiles with more than n nodes [1];\n";
     std::cerr << "   --single | -s            compute for single tiles, not meta tiles\n";
     std::cerr << "   --count | -c             print number of nodes in each tile\n";
     std::cerr << "   --progress | -p          display progress bar\n";
@@ -64,7 +65,7 @@ int main(int argc, char* argv[]) {
        { 0, 0, 0, 0 } };
 
     while (true) {
-        const int c = getopt_long(argc, argv, "hm:M:apcsz:", long_options, 0);
+        const int c = getopt_long(argc, argv, "hm:M:pcsz:", long_options, 0);
         if (c == -1) {
             break;
         }
@@ -163,12 +164,8 @@ int main(int argc, char* argv[]) {
     // grid[] which is the tile coordinate
     std::vector<std::pair<unsigned int, unsigned int>> sorter;
     for (unsigned int i = 0; i < grid.size(); ++i) {
-        if (grid[i]) {
+        if (grid[i] >= min_nodes) {
             sorter.emplace_back(grid[i], i);
-        } else if (min_nodes == 0) {
-            // This will add all tiles which contain no nodes. It is useful
-            // if you want a list of all tiles an a list how "large" each tile is.
-            sorter.emplace_back(0, i);
         }
     }
 
@@ -182,10 +179,6 @@ int main(int argc, char* argv[]) {
     // dump first "max" elements of sorter vector
     if (max > sorter.size()) max=sorter.size();
     for (unsigned int i=0; i<max; i++) {
-        if (sorter[i].first < min_nodes) {
-            // All tiles with more than min_nodes nodes have been printed already.
-            break;
-        }
         unsigned int y = sorter[i].second >> effective_zoom;
         unsigned int x = sorter[i].second & ((1 << effective_zoom) - 1);
         if (single_tile) {
