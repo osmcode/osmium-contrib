@@ -25,7 +25,7 @@ set(PROG dense_tiles)
 file(GLOB SOURCES *.cpp *.hpp)
 add_executable(${PROG} ${SOURCES})
 target_link_libraries(${PROG} ${OSMIUM_LIBRARIES})
-
+set_pthread_on_target(${PROG})
 
 add_test(dense_tiles dense_tiles --help)
 

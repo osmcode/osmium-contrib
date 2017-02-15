@@ -25,7 +25,7 @@ set(PROG export_to_wkt)
 file(GLOB SOURCES *.cpp *.hpp)
 add_executable(${PROG} ${SOURCES})
 target_link_libraries(${PROG} ${OSMIUM_LIBRARIES})
-
+set_pthread_on_target(${PROG})
 
 add_test(export_to_wkt export_to_wkt ${CMAKE_CURRENT_SOURCE_DIR}/test/node.osm)
 

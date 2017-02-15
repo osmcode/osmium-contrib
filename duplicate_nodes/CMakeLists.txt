@@ -25,6 +25,7 @@ set(PROG duplicate_nodes)
 file(GLOB SOURCES *.cpp *.hpp)
 add_executable(${PROG} ${SOURCES})
 target_link_libraries(${PROG} ${OSMIUM_LIBRARIES})
+set_pthread_on_target(${PROG})
 
 
 #----------------------------------------------------------------------

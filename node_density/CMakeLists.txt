@@ -28,6 +28,7 @@ set(PROG node_density)
 file(GLOB SOURCES *.cpp *.hpp)
 add_executable(${PROG} ${SOURCES})
 target_link_libraries(${PROG} ${Boost_LIBRARIES} ${OSMIUM_LIBRARIES})
+set_pthread_on_target(${PROG})
 
 add_test(node_density_help node_density --help)
 
