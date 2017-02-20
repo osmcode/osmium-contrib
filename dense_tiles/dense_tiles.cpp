@@ -29,19 +29,12 @@ void print_help(const char* progname) {
     std::cerr << "   --help | -h              this help\n";
     std::cerr << "   --zoom <n> | -z <n>      compute for zoom n [14]\n";
     std::cerr << "   --max <n> | -m <n>       list a maximum of n tiles [100000]\n";
-    std::cerr << "   --min-nodes <n> | -M <n> list tiles with more than n nodes [1];\n";
+    std::cerr << "                            Use --max 0 to set to 'no limit'.\n";
+    std::cerr << "   --min-nodes <n> | -M <n> list only tiles with more than n nodes\n";
+    std::cerr << "                            [1];\n";
     std::cerr << "   --single | -s            compute for single tiles, not meta tiles\n";
     std::cerr << "   --count | -c             print number of nodes in each tile\n";
     std::cerr << "   --progress | -p          display progress bar\n";
-    std::cerr << "\n";
-    std::cerr << "Conflict of --max` vs. `--min-nodes` setting:\n";
-    std::cerr << "  In case of a conflict between these two settings, the setting which\n";
-    std::cerr << "  sets the lower number of printed tiles will stop the output of further\n";
-    std::cerr << "  tiles.\n";
-    std::cerr << "  Use `--max 0` (it's a shortcut) to get all tiles printed which\n";
-    std::cerr << "  contain more or equal than `--min-nodes`. Use the `--min-nodes 0` to\n";
-    std::cerr << "  print exactly that number of tiles you requested using the `--max`\n";
-    std::cerr << "  setting (except there are not that much tiles at the zoom level. ;-)\n";
 }
 
 int main(int argc, char* argv[]) {
