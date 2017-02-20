@@ -22,34 +22,43 @@
 
 void print_help(const char* progname) {
     std::cerr << "Usage: " << progname << " [OPTIONS] OSMFILE\n";
-    std::cerr << "List the (meta) tiles with the highest node density in the input file.\n";
-    std::cerr << "In meta tile mode, which is the default, only coordinates for the upper\n";
-    std::cerr << "left tile in an 8x8 tile block will be output.\n";
-    std::cerr << "   --help | -h           this help\n";
-    std::cerr << "   --zoom <n> | -z <n>   compute for zoom n [14]\n";
-    std::cerr << "   --max <n> | -m <n>    list n densest tiles [100000]\n";
-    std::cerr << "   --single | -s         compute for single tiles, not meta tiles\n";
-    std::cerr << "   --progress | -p       display progress bar\n";
+    std::cerr << "List the (meta) tiles in the input file ordered by node density,\n";
+    std::cerr << "highest first. In meta tile mode, which is the default, only\n";
+    std::cerr << "coordinates for the upper left tile in an 8x8 tile block will be\n";
+    std::cerr << "output.\n";
+    std::cerr << "   --help | -h              this help\n";
+    std::cerr << "   --zoom <n> | -z <n>      compute for zoom n [14]\n";
+    std::cerr << "   --max <n> | -m <n>       list a maximum of n tiles [100000]\n";
+    std::cerr << "                            Use --max 0 to set to 'no limit'.\n";
+    std::cerr << "   --min-nodes <n> | -M <n> list only tiles with more than n nodes\n";
+    std::cerr << "                            [1];\n";
+    std::cerr << "   --single | -s            compute for single tiles, not meta tiles\n";
+    std::cerr << "   --count | -c             print number of nodes in each tile\n";
+    std::cerr << "   --progress | -p          display progress bar\n";
 }
 
 int main(int argc, char* argv[]) {
 
     bool enable_progress_bar = false;
+    bool print_count = false;
     bool single_tile = false;
     unsigned int zoom = 14;
     unsigned int effective_zoom;
     unsigned int max = 100000;
+    unsigned int min_nodes = 1;
 
     static struct option long_options[] = {
-       { "help",     no_argument,       0, 'h' },
-       { "zoom",     required_argument, 0, 'z' },
-       { "max",      required_argument, 0, 'm' },
-       { "single",   no_argument,       0, 's' },
-       { "progress", no_argument,       0, 'p' },
+       { "help",      no_argument,       0, 'h' },
+       { "zoom",      required_argument, 0, 'z' },
+       { "max",       required_argument, 0, 'm' },
+       { "min-nodes", required_argument, 0, 'M' },
+       { "single",    no_argument,       0, 's' },
+       { "count",     no_argument,       0, 'c' },
+       { "progress",  no_argument,       0, 'p' },
        { 0, 0, 0, 0 } };
 
     while (true) {
-        const int c = getopt_long(argc, argv, "hm:psz:", long_options, 0);
+        const int c = getopt_long(argc, argv, "hm:M:pcsz:", long_options, 0);
         if (c == -1) {
             break;
         }
@@ -60,8 +69,14 @@ int main(int argc, char* argv[]) {
             case 'm':
                 max = std::atoi(optarg);
                 break;
+            case 'M':
+                min_nodes = std::atoi(optarg);
+                break;
             case 'p':
                 enable_progress_bar = true;
+                break;
+            case 'c':
+                print_count = true;
                 break;
             case 's':
                 single_tile = true;
@@ -101,6 +116,11 @@ int main(int argc, char* argv[]) {
         effective_zoom -= 3;
     }
 
+    // shortcut for users – `-m 0` prints all tiles
+    if (max == 0) {
+        max = 1 << (2 * effective_zoom);
+    }
+
     // vector holds one counter for each tile
     std::vector<unsigned int> grid(1 << (2 * effective_zoom));
 
@@ -137,7 +157,7 @@ int main(int argc, char* argv[]) {
     // grid[] which is the tile coordinate
     std::vector<std::pair<unsigned int, unsigned int>> sorter;
     for (unsigned int i = 0; i < grid.size(); ++i) {
-        if (grid[i]) {
+        if (grid[i] >= min_nodes) {
             sorter.emplace_back(grid[i], i);
         }
     }
@@ -155,10 +175,14 @@ int main(int argc, char* argv[]) {
         unsigned int y = sorter[i].second >> effective_zoom;
         unsigned int x = sorter[i].second & ((1 << effective_zoom) - 1);
         if (single_tile) {
-           std::cout << zoom << "/" << x << "/" << y << "\n";
+            std::cout << zoom << "/" << x << "/" << y;
         } else {
-           std::cout << zoom << "/" << (x<<3) << "/" << (y<<3) << "\n";
+            std::cout << zoom << "/" << (x<<3) << "/" << (y<<3);
         }
+        if (print_count) {
+            std::cout << " " << sorter[i].first;
+        }
+        std::cout << "\n";
     }
 
 }
