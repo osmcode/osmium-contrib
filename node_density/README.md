@@ -104,5 +104,5 @@ This program is released into the Public Domain.
 
 ## Author
 
-Jochen Topf (http://jochentopf.com/)
+Jochen Topf (https://jochentopf.com/)
 

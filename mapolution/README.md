@@ -14,6 +14,7 @@ You'll need:
   (http://boost.org/) version 1.48 or later.
   (On Debian/Ubuntu install `libboost-filesystem-dev`,
   and `libboost-program-options-dev` packages.)
+* gifsicle (On Debian/Ubuntu install `gifsicle`.
 
 
 ## Building
@@ -42,8 +43,7 @@ easily.
 ## Running
 
 First you need a full history dump extract of a city or so. The area
-can't be too large, because everything has to fit into memory. See
-http://osm.personalwerk.de/full-history-extracts/ for some downloads.
+can't be too large, because everything has to fit into memory.
 
 Run
 
@@ -81,5 +81,5 @@ This program is released into the Public Domain.
 
 ## Author
 
-Jochen Topf (http://jochentopf.com/)
+Jochen Topf (https://jochentopf.com/)
 
