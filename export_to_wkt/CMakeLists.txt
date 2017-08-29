@@ -12,7 +12,7 @@ project(osmium-export-to-wkt)
 if(NOT DEFINED CMAKE_PREFIX_PATH)
     set(CMAKE_PREFIX_PATH "../../libosmium")
 endif()
-find_package(Osmium REQUIRED COMPONENTS io sparsehash)
+find_package(Osmium REQUIRED COMPONENTS io)
 include_directories(SYSTEM ${OSMIUM_INCLUDE_DIRS})
 
 include(common)
