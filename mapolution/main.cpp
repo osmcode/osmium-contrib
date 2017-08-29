@@ -13,9 +13,9 @@
 #include <osmium/io/any_input.hpp>
 #include <osmium/visitor.hpp>
 
-#include <osmium/index/map/sparse_mem_array.hpp>
+#include <osmium/index/map/flex_mem.hpp>
 #include <osmium/handler/node_locations_for_ways.hpp>
-using index_type = osmium::index::map::SparseMemArray<osmium::unsigned_object_id_type, osmium::Location>;
+using index_type = osmium::index::map::FlexMem<osmium::unsigned_object_id_type, osmium::Location>;
 using location_handler_type = osmium::handler::NodeLocationsForWays<index_type>;
 
 #include "cmdline_options.hpp"
@@ -42,8 +42,8 @@ OGREnvelope extract(
     using diff_iterator = osmium::DiffIterator<osmium::memory::Buffer::t_iterator<osmium::OSMObject>>;
     osmium::memory::Buffer fbuffer{initial_buffer_size, osmium::memory::Buffer::auto_grow::yes};
     {
-        const auto dbegin = diff_iterator(begin, relations);
-        const auto dend   = diff_iterator(relations, relations);
+        const diff_iterator dbegin{begin, relations};
+        const diff_iterator dend{relations, relations};
 
         std::for_each(dbegin, dend, [point_in_time, &fbuffer](const osmium::DiffObject& d) {
             if (d.is_visible_at(point_in_time)) {
@@ -59,8 +59,8 @@ OGREnvelope extract(
     // relations
     osmium::memory::Buffer rbuffer(initial_buffer_size, osmium::memory::Buffer::auto_grow::yes);
     {
-        const auto dbegin = diff_iterator(relations, end);
-        const auto dend   = diff_iterator(end, end);
+        const diff_iterator dbegin{relations, end};
+        const diff_iterator dend{end, end};
 
         std::for_each(dbegin, dend, [point_in_time, &rbuffer](const osmium::DiffObject& d) {
             if (d.is_visible_at(point_in_time)) {
@@ -84,7 +84,7 @@ OGREnvelope extract(
     const std::string date = point_in_time.to_iso().substr(0, 10);
 
     std::vector<std::string> datasource_options;
-    std::string datasource_name = options.output_directory + "/" + date;
+    std::string datasource_name{options.output_directory + "/" + date};
     if (options.output_format == "GeoJSON") {
         datasource_name += ".json";
     } else if (options.output_format == "SQLite") {
@@ -97,9 +97,9 @@ OGREnvelope extract(
     gdalcpp::Dataset dataset{options.output_format, datasource_name, gdalcpp::SRS{factory.proj_string()}, datasource_options};
 
 #ifdef HANDLER
-    HANDLER geom_handler(factory, dataset, date);
+    HANDLER geom_handler{factory, dataset, date};
 #else
-    BuildingsHandler geom_handler(factory, dataset, date);
+    BuildingsHandler geom_handler{factory, dataset, date};
 #endif
     osmium::apply(fbuffer.begin(),
                   fbuffer.end(),
@@ -115,7 +115,7 @@ OGREnvelope extract(
 using tspair = std::pair<osmium::Timestamp, osmium::Timestamp>;
 template <class TIter>
 tspair min_max_timestamp(TIter begin, TIter end) {
-    tspair init = std::make_pair(osmium::end_of_time(), osmium::start_of_time());
+    const tspair init = std::make_pair(osmium::end_of_time(), osmium::start_of_time());
     return std::accumulate(begin, end, init, [](tspair start_end, const osmium::OSMObject& obj) -> tspair {
         if (obj.timestamp() < start_end.first) {
             start_end.first = obj.timestamp();
@@ -184,20 +184,20 @@ int main(int argc, char* argv[]) {
 
     options.vout << "Reading input file into memory...\n";
     osmium::io::File file{options.input_filename, options.input_format};
-    osmium::memory::Buffer ibuffer = osmium::io::read_file(file, osmium::osm_entity_bits::object);
+    osmium::memory::Buffer ibuffer{osmium::io::read_file(file, osmium::osm_entity_bits::object)};
     options.vout << "Done. Input data needs " << (ibuffer.committed() / (1024 * 1024)) << " MBytes.\n";
 
-    auto first_relation = std::find_if(ibuffer.begin<osmium::OSMObject>(),
-                                       ibuffer.end<osmium::OSMObject>(),
-                                       [](const osmium::OSMObject& obj){
+    const auto first_relation = std::find_if(ibuffer.begin<osmium::OSMObject>(),
+                                             ibuffer.end<osmium::OSMObject>(),
+                                             [](const osmium::OSMObject& obj){
         return obj.type() == osmium::item_type::relation;
     });
 
     osmium::Timestamp start_time = options.start_time;
     osmium::Timestamp end_time = options.end_time;
     if (!start_time || !end_time) {
-        tspair min_max = min_max_timestamp(ibuffer.cbegin<osmium::OSMObject>(),
-                                           ibuffer.cend<osmium::OSMObject>());
+        const tspair min_max = min_max_timestamp(ibuffer.cbegin<osmium::OSMObject>(),
+                                                 ibuffer.cend<osmium::OSMObject>());
 
         if (!start_time) {
             options.vout << "No start time on command line, got it from file contents\n";
