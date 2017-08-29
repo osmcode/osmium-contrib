@@ -5,15 +5,15 @@
 #include <string>
 
 #include <osmium/area/assembler.hpp>
-#include <osmium/area/multipolygon_collector.hpp>
+#include <osmium/area/multipolygon_manager.hpp>
 #include <osmium/geom/wkt.hpp>
 #include <osmium/handler.hpp>
 #include <osmium/io/any_input.hpp>
 #include <osmium/visitor.hpp>
 
-#include <osmium/index/map/sparse_mem_array.hpp>
+#include <osmium/index/map/flex_mem.hpp>
 #include <osmium/handler/node_locations_for_ways.hpp>
-using index_type = osmium::index::map::SparseMemArray<osmium::unsigned_object_id_type, osmium::Location>;
+using index_type = osmium::index::map::FlexMem<osmium::unsigned_object_id_type, osmium::Location>;
 using location_handler_type = osmium::handler::NodeLocationsForWays<index_type>;
 
 class ExportToWKTHandler : public osmium::handler::Handler {
@@ -50,14 +50,13 @@ int main(int argc, char* argv[]) {
         std::exit(1);
     }
 
-    const std::string input_filename{argv[1]};
+    const osmium::io::File input_file{argv[1]};
 
     osmium::area::Assembler::config_type assembler_config;
-    osmium::area::MultipolygonCollector<osmium::area::Assembler> collector{assembler_config};
+    osmium::area::MultipolygonManager<osmium::area::Assembler> mp_manager{assembler_config};
 
     std::cerr << "Pass 1...\n";
-    osmium::io::Reader reader1{input_filename};
-    collector.read_relations(reader1);
+    osmium::relations::read_relations(input_file, mp_manager);
     std::cerr << "Pass 1 done\n";
 
     index_type index;
@@ -65,8 +64,8 @@ int main(int argc, char* argv[]) {
 
     std::cerr << "Pass 2...\n";
     ExportToWKTHandler export_handler;
-    osmium::io::Reader reader2{input_filename};
-    osmium::apply(reader2, location_handler, export_handler, collector.handler([&export_handler](const osmium::memory::Buffer& buffer) {
+    osmium::io::Reader reader{input_file};
+    osmium::apply(reader, location_handler, export_handler, mp_manager.handler([&export_handler](const osmium::memory::Buffer& buffer) {
         osmium::apply(buffer, export_handler);
     }));
     std::cerr << "Pass 2 done\n";
