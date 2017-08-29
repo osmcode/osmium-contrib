@@ -6,8 +6,8 @@
 
 #include <boost/filesystem.hpp>
 
-#include <osmium/area/assembler.hpp>
-#include <osmium/area/multipolygon_collector.hpp>
+#include <osmium/area/assembler_legacy.hpp>
+#include <osmium/area/multipolygon_manager_legacy.hpp>
 #include <osmium/diff_iterator.hpp>
 #include <osmium/handler.hpp>
 #include <osmium/io/any_input.hpp>
@@ -70,11 +70,12 @@ OGREnvelope extract(
         });
     }
 
-    osmium::area::Assembler::config_type assembler_config;
-    osmium::area::MultipolygonCollector<osmium::area::Assembler> collector{assembler_config};
+    osmium::area::AssemblerLegacy::config_type assembler_config;
+    osmium::area::MultipolygonManagerLegacy<osmium::area::AssemblerLegacy> mp_manager{assembler_config};
 
     options.vout << "  Reading relations...\n";
-    collector.read_relations(rbuffer.cbegin(), rbuffer.cend());
+    osmium::apply(rbuffer, mp_manager);
+    mp_manager.prepare_for_lookup();
 
     index_type index_pos;
     location_handler_type location_handler(index_pos);
@@ -105,7 +106,7 @@ OGREnvelope extract(
                   fbuffer.end(),
                   location_handler,
                   geom_handler,
-                  collector.handler([&geom_handler](const osmium::memory::Buffer& buffer) {
+                  mp_manager.handler([&geom_handler](const osmium::memory::Buffer& buffer) {
         osmium::apply(buffer, geom_handler);
     }));
 
