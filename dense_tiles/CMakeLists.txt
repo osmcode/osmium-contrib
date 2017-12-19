@@ -10,7 +10,7 @@ include(add_dev_configuration)
 project(osmium-dense-tiles)
 
 if(NOT DEFINED CMAKE_PREFIX_PATH)
-    set(CMAKE_PREFIX_PATH "../../libosmium")
+    set(CMAKE_PREFIX_PATH "../../libosmium;../../protozero")
 endif()
 find_package(Osmium REQUIRED COMPONENTS io)
 include_directories(SYSTEM ${OSMIUM_INCLUDE_DIRS})
