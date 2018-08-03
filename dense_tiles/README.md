@@ -9,7 +9,7 @@ left tile in an 8x8 tile block will be output.
 
 ## Prerequisites
 
-You'll need [Libosmium](http://osmcode.org/libosmium) and its dependencies
+You'll need [Libosmium](https://osmcode.org/libosmium) and its dependencies
 installed first.
 
 

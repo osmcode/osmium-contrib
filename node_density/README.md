@@ -6,14 +6,14 @@ Visualize the node density in a given OSM file.
 
 ## Prerequisites
 
-You'll need [Libosmium](http://osmcode.org/libosmium) and its dependencies
+You'll need [Libosmium](https://osmcode.org/libosmium) and its dependencies
 installed first.
 
 You'll need the following libraries:
 
-[GDAL](http://www.gdal.org/) - Debian/Ubuntu: libgdal-dev, gdal-bin
+[GDAL](https://www.gdal.org/) - Debian/Ubuntu: libgdal-dev, gdal-bin
 
-[Proj](http://trac.osgeo.org/proj/) - Debian/Ubuntu: libproj-dev
+[Proj](https://proj4.org/) - Debian/Ubuntu: libproj-dev
 
 
 ## Building
@@ -54,7 +54,7 @@ the default name `out.tif`.
 
 ### With QGIS
 
-Run [QGIS](http://qgis.org/) and open the output file with it, either through
+Run [QGIS](https://qgis.org/) and open the output file with it, either through
 the "Layer -> Add Raster Layer.." menu or by dragging the file onto the QGIS
 window. Open the "Layer Properties" dialogue, choose the "Style" tab and change
 the "Min" and "Max" values to "0" and "1000", respectively. You should see the

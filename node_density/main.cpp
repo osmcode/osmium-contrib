@@ -106,7 +106,7 @@ public:
         }
 
         dataset->SetMetadataItem("TIFFTAG_IMAGEDESCRIPTION", "OpenStreetMap node density");
-        dataset->SetMetadataItem("TIFFTAG_COPYRIGHT", "Copyright OpenStreetMap contributors (http://www.openstreetmap.org/copyright), License: CC-BY-SA (http://creativecommons.org/licenses/by-sa/2.0/)");
+        dataset->SetMetadataItem("TIFFTAG_COPYRIGHT", "Copyright OpenStreetMap contributors (https://www.openstreetmap.org/copyright), License: CC-BY-SA (https://creativecommons.org/licenses/by-sa/2.0/)");
         dataset->SetMetadataItem("TIFFTAG_SOFTWARE", "node_density");
 
         double geo_transform[6] = {m_bottom_left.x, 1/m_factor_x, 0, m_top_right.y, 0, 1/m_factor_y};

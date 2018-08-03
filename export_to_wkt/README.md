@@ -6,7 +6,7 @@ Write all node, way, and area geometries out in WKT format.
 
 ## Prerequisites
 
-You'll need [Libosmium](http://osmcode.org/libosmium) and its dependencies
+You'll need [Libosmium](https://osmcode.org/libosmium) and its dependencies
 installed first.
 
 
