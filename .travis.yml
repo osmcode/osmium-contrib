@@ -40,7 +40,7 @@ matrix:
       env: CXX='clang++-3.9' BUILD_TYPE='Dev'
 
     - os: linux
-      compiler: linux-clang40-dev
+      compiler: linux-clang4-dev
       addons:
         apt:
           sources: ['llvm-toolchain-trusty-4.0', 'ubuntu-toolchain-r-test']
@@ -48,7 +48,7 @@ matrix:
       env: CXX='clang++-4.0' BUILD_TYPE='Dev'
 
     - os: linux
-      compiler: linux-clang50-dev
+      compiler: linux-clang5-dev
       addons:
         apt:
           sources: ['llvm-toolchain-trusty-5.0', 'ubuntu-toolchain-r-test']
@@ -60,7 +60,7 @@ matrix:
       compiler: linux-clang6-dev
       addons:
         apt:
-          packages: ['libboost-dev', 'libboost-filesystem-dev', 'libboost-program-options-dev', 'libgdal-dev', 'libproj-dev', 'libsparsehash-dev', 'gcc-6', 'g++-6', 'clang-6']
+          packages: ['libboost-dev', 'libboost-filesystem-dev', 'libboost-program-options-dev', 'libgdal-dev', 'libproj-dev', 'libsparsehash-dev', 'gcc-6', 'g++-6', 'clang-6.0']
       env: CC='clang-6' CXX='clang++-6' BUILD_TYPE='Dev'
 
     - os: linux
