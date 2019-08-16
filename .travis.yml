@@ -56,11 +56,10 @@ matrix:
       env: CXX='clang++-5.0' BUILD_TYPE='Dev'
 
     - os: linux
-      dist: xenial
+      dist: bionic
       compiler: linux-clang6-dev
       addons:
         apt:
-          sources: [ 'ubuntu-toolchain-r-test' ]
           packages: ['libboost-dev', 'libboost-filesystem-dev', 'libboost-program-options-dev', 'libgdal-dev', 'libproj-dev', 'libsparsehash-dev', 'gcc-6', 'g++-6', 'clang-6']
       env: CC='clang-6' CXX='clang++-6' BUILD_TYPE='Dev'
 
