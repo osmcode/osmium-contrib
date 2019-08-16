@@ -61,7 +61,7 @@ matrix:
       addons:
         apt:
           packages: ['libboost-dev', 'libboost-filesystem-dev', 'libboost-program-options-dev', 'libgdal-dev', 'libproj-dev', 'libsparsehash-dev', 'gcc-6', 'g++-6', 'clang-6.0']
-      env: CC='clang-6' CXX='clang++-6' BUILD_TYPE='Dev'
+      env: CC='clang-6.0' CXX='clang++-6.0' BUILD_TYPE='Dev'
 
     - os: linux
       dist: bionic
