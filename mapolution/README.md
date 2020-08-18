@@ -55,9 +55,8 @@ Run
 This will create shapefiles in `out` directory with building data for
 every 30 days.
 
-Then run
-
-    ./rasterize.sh
+Then run `SRC/rasterize.sh` in the same directory (replace `SRC` by the
+source directory where the `rasterize.sh` file is).
 
 This will create an animated GIF called `anim.gif` with the result.
 
