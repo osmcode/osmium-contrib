@@ -35,7 +35,6 @@ Options::Options(int argc, char* argv[]) {
             ("output,o", po::value<std::string>(), "Output directory")
             ("output-format,f", po::value<std::string>(), "OGR format of output files")
             ("input-format,F", po::value<std::string>(), "Format of input file")
-            ("crs,c", po::value<int>(), "EPSG code of Coordinate Reference System")
             ("start-time,s", po::value<std::string>(), "Start time (yyyy-mm-dd)")
             ("end-time,e", po::value<std::string>(), "End time (yyyy-mm-dd)")
             ("time-step,S", po::value<int>(), "Time step in days (default: 7 days)")
@@ -81,10 +80,6 @@ Options::Options(int argc, char* argv[]) {
 
         if (vm.count("output-format")) {
             output_format = vm["output-format"].as<std::string>();
-        }
-
-        if (vm.count("crs")) {
-            epsg = vm["crs"].as<int>();
         }
 
         if (vm.count("start-time")) {

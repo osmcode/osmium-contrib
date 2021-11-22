@@ -15,7 +15,7 @@ include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 if(NOT DEFINED CMAKE_PREFIX_PATH)
     set(CMAKE_PREFIX_PATH "../../libosmium;../../protozero")
 endif()
-find_package(Osmium 2.13.1 REQUIRED COMPONENTS io gdal proj)
+find_package(Osmium 2.13.1 REQUIRED COMPONENTS io gdal)
 include_directories(SYSTEM ${OSMIUM_INCLUDE_DIRS})
 
 include(common)

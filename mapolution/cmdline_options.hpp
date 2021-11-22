@@ -22,7 +22,6 @@ struct Options {
     std::string output_directory {"out"};
     std::string input_format;
     std::string output_format {"ESRI Shapefile"};
-    int epsg = 4326;
 
     osmium::Timestamp start_time;
     osmium::Timestamp end_time;

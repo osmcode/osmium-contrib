@@ -1,7 +1,7 @@
 
 # Mapolution
 
-Show evolution of OSM map.
+Show evolution of OSM map in an animated gif.
 
 ## Prerequisites
 

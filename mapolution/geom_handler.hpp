@@ -6,13 +6,13 @@
 #include "gdalcpp.hpp"
 
 #include <osmium/geom/ogr.hpp>
-#include <osmium/geom/projection.hpp>
+#include <osmium/geom/mercator_projection.hpp>
 
 class GeomHandler : public osmium::handler::Handler {
 
 public:
 
-    typedef osmium::geom::OGRFactory<osmium::geom::Projection> factory_type;
+    typedef osmium::geom::OGRFactory<osmium::geom::MercatorProjection> factory_type;
 
 private:
 

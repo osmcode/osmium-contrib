@@ -29,7 +29,7 @@ constexpr size_t initial_buffer_size = 10 * 1024 * 1024;
 
 OGREnvelope extract(
         Options& options,
-        osmium::geom::OGRFactory<osmium::geom::Projection>& factory,
+        osmium::geom::OGRFactory<osmium::geom::MercatorProjection>& factory,
         osmium::memory::Buffer::t_iterator<osmium::OSMObject> begin,
         osmium::memory::Buffer::t_iterator<osmium::OSMObject> relations,
         osmium::memory::Buffer::t_iterator<osmium::OSMObject> end,
@@ -165,7 +165,6 @@ int main(int argc, char* argv[]) {
     if (!options.input_format.empty()) {
         options.vout << "  Input format:                " << options.input_format << "\n";
     }
-    options.vout << "  Coordinate Reference System: " << options.epsg << "\n";
     options.vout << "  Output directory:            " << options.output_directory << "\n";
     options.vout << "  Output OGR format:           " << options.output_format << "\n";
     if (options.start_time) {
@@ -213,7 +212,7 @@ int main(int argc, char* argv[]) {
     options.vout << "Start time: " << start_time << "\n";
     options.vout << "End time  : " << end_time << "\n";
 
-    osmium::geom::OGRFactory<osmium::geom::Projection> factory{osmium::geom::Projection{options.epsg}};
+    osmium::geom::OGRFactory<osmium::geom::MercatorProjection> factory{osmium::geom::MercatorProjection{}};
 
     OGREnvelope envelope_all;
     const int seconds_per_day = 24 * 60 * 60;
