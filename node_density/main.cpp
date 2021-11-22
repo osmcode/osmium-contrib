@@ -23,7 +23,6 @@
 #include <osmium/handler.hpp>
 #include <osmium/visitor.hpp>
 #include <osmium/geom/mercator_projection.hpp>
-#include <osmium/geom/projection.hpp>
 
 #include "cmdline_options.hpp"
 
@@ -33,7 +32,7 @@ class NodeDensityHandler : public osmium::handler::Handler {
 
     Options& m_options;
 
-    osmium::geom::Projection m_projection;
+    osmium::geom::MercatorProjection m_projection{};
 
     const int m_width;
     const int m_height;
@@ -64,7 +63,6 @@ public:
 
     NodeDensityHandler(Options& options) :
         m_options(options),
-        m_projection(options.srs),
         m_width(options.width),
         m_height(options.height),
         m_bottom_left(m_projection(options.box.bottom_left())),
@@ -149,19 +147,17 @@ int main(int argc, char* argv[]) {
         std::exit(return_code::fatal);
     }
 
-    if (options.epsg == 3857) {
-        bool warning = false;
-        if (options.box.bottom_left().lat() < -osmium::geom::MERCATOR_MAX_LAT) {
-            options.box.bottom_left().set_lat(-osmium::geom::MERCATOR_MAX_LAT);
-            warning = true;
-        }
-        if (options.box.top_right().lat() > osmium::geom::MERCATOR_MAX_LAT) {
-            options.box.top_right().set_lat(osmium::geom::MERCATOR_MAX_LAT);
-            warning = true;
-        }
-        if (warning) {
-            std::cerr << "Warning: Reduced size of bounding box to valid area for Web Mercator (EPSG:3857).\n";
-        }
+    bool warning = false;
+    if (options.box.bottom_left().lat() < -osmium::geom::MERCATOR_MAX_LAT) {
+        options.box.bottom_left().set_lat(-osmium::geom::MERCATOR_MAX_LAT);
+        warning = true;
+    }
+    if (options.box.top_right().lat() > osmium::geom::MERCATOR_MAX_LAT) {
+        options.box.top_right().set_lat(osmium::geom::MERCATOR_MAX_LAT);
+        warning = true;
+    }
+    if (warning) {
+        std::cerr << "Warning: Reduced size of bounding box to valid area for Web Mercator (EPSG:3857).\n";
     }
 
     options.vout << "Set to verbose output. (Suppress with --quiet, -q.)\n";
@@ -171,10 +167,6 @@ int main(int argc, char* argv[]) {
         options.vout << "  Input format:             " << options.input_format << "\n";
     }
     options.vout << "  Output file:              " << options.output_filename << "\n";
-    if (options.epsg > 0) {
-        options.vout << "  EPSG code for SRS:        " << options.epsg << "\n";
-    }
-    options.vout << "  Spatial reference system: " << options.srs << "\n";
     options.vout << "  Pixel width:              " << options.width << "\n";
     options.vout << "  Pixel height:             " << options.height << "\n";
     options.vout << "  Bounding box:             " << options.box << "\n";

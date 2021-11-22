@@ -18,7 +18,6 @@ Options::Options(int argc, char* argv[]) {
             ("format,f", po::value<std::string>(), "Format of input file (default: autodetect)")
             ("output,o", po::value<std::string>(), "Name of output image")
             ("epsg,e", po::value<int>(), "EPSG code of spatial reference system (default: 4326)")
-            ("srs,s", po::value<std::string>(), "Spatial reference system in proj format")
             ("width,W", po::value<size_t>(), "Pixel width of output image")
             ("height,H", po::value<size_t>(), "Pixel height of output image")
             ("left,x", po::value<double>(), "Left edge of bounding box (default: -180)")
@@ -65,21 +64,6 @@ Options::Options(int argc, char* argv[]) {
 
         if (vm.count("output")) {
             output_filename = vm["output"].as<std::string>();
-        }
-
-        if (vm.count("srs") && vm.count("epsg")) {
-            std::cerr << "Use at most one of the options --epsg,-e and --srs,-s\n";
-            std::exit(return_code::fatal);
-        }
-
-        if (vm.count("srs")) {
-            srs = vm["srs"].as<std::string>();
-            epsg = -1;
-        }
-
-        if (vm.count("epsg")) {
-            epsg = vm["epsg"].as<int>();
-            srs = "+init=epsg:" + std::to_string(epsg);
         }
 
         if (vm.count("width")) {
