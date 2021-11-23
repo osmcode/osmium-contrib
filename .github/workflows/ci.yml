@@ -201,6 +201,7 @@ jobs:
     env:
       CC: clang
       CXX: clang++
+      CXXFLAGS: -std=c++14
       BUILD_TYPE: Dev
     steps:
       - uses: actions/checkout@v2
@@ -216,6 +217,7 @@ jobs:
     env:
       CC: clang
       CXX: clang++
+      CXXFLAGS: -std=c++14
       BUILD_TYPE: Dev
     steps:
       - uses: actions/checkout@v2
@@ -231,6 +233,7 @@ jobs:
     env:
       CC: clang
       CXX: clang++
+      CXXFLAGS: -std=c++14
       BUILD_TYPE: Release
     steps:
       - uses: actions/checkout@v2
