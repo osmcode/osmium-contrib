@@ -1,9 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 #
 #  rasterize.sh
 #
 
-set -e
+set -euo pipefail
 
 RED=255
 GREEN=255
@@ -19,11 +19,11 @@ DIR=out
 
 . $DIR/bbox
 
-geo_width=`echo "$XMAX - $XMIN" | bc -q | tail -1`
-geo_height=`echo "$YMAX - $YMIN" | bc -q | tail -1`
+geo_width=`echo "$XMAX - $XMIN" | bc -q -l | tail -1`
+geo_height=`echo "$YMAX - $YMIN" | bc -q -l | tail -1`
 
-ratio=`echo "$WIDTH / $geo_width" | bc -q | tail -1`
-HEIGHT=`echo "$geo_height * $ratio" | bc -q | tail -1 | cut -d. -f1`
+ratio=`echo "$WIDTH / $geo_width" | bc -q -l | tail -1`
+HEIGHT=`echo "$geo_height * $ratio" | bc -q -l | tail -1 | cut -d. -f1`
 
 echo "Rasterizing vector data..."
 for i in out/????-??-??; do
