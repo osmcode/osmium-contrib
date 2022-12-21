@@ -1,9 +1,9 @@
 name: Build subprojects
 
 runs:
-    using: composite
-    steps:
-      - name: Build
-        run: ./cmake/build_subprojects.sh ${BUILD_TYPE}
-        shell: bash
+  using: composite
+  steps:
+    - name: Build
+      run: ./cmake/build_subprojects.sh ${BUILD_TYPE}
+      shell: bash
 
