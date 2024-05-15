@@ -26,7 +26,9 @@
 
 #include "cmdline_options.hpp"
 
-using node_count_type = uint32_t;
+// Set to 16 or 32 bit
+using node_count_type = uint16_t;
+#define IMAGE_TYPE GDT_UInt16
 
 class NodeDensityHandler : public osmium::handler::Handler {
 
@@ -52,10 +54,12 @@ class NodeDensityHandler : public osmium::handler::Handler {
     void record_location(const osmium::Location& location) {
         if (m_options.box.contains(location)) {
             const osmium::geom::Coordinates c = m_projection(location);
-            const int x = in_range(0, (c.x - m_bottom_left.x) * m_factor_x, m_width  - 1);
-            const int y = in_range(0, (c.y - m_top_right.y)   * m_factor_y, m_height - 1);
-            const int n = y * m_width + x;
-            ++m_node_count[n];
+            const std::size_t x = in_range(0, (c.x - m_bottom_left.x) * m_factor_x, m_width  - 1);
+            const std::size_t y = in_range(0, (c.y - m_top_right.y)   * m_factor_y, m_height - 1);
+            const std::size_t n = y * m_width + x;
+            if (m_node_count[n] < std::numeric_limits<node_count_type>::max()) {
+                ++m_node_count[n];
+            }
         }
     }
 
@@ -69,7 +73,11 @@ public:
         m_top_right(m_projection(options.box.top_right())),
         m_factor_x(m_width  / (m_top_right.x - m_bottom_left.x)),
         m_factor_y(- m_height / (m_top_right.y - m_bottom_left.y)),
-        m_node_count(new node_count_type[m_width * m_height]) {
+        m_node_count(new node_count_type[options.width * options.height]) {
+        if (!m_node_count) {
+            std::cerr << "Could not allocate memory\n";
+            std::exit(return_code::error);
+        }
     }
 
     void node(const osmium::Node& node) {
@@ -77,35 +85,25 @@ public:
     }
 
     void write_to_file() {
-        m_options.vout << "Maximum node count per pixel: " << *std::max_element(&m_node_count[0], &m_node_count[m_width * m_height]) << "\n";
+        m_options.vout << "Maximum node count per pixel: "
+                       << *std::max_element(
+                              &m_node_count[0],
+                              &m_node_count[m_options.width * m_options.height])
+                       << "\n";
 
         GDALAllRegister();
 
-        GDALDriver* driver = GetGDALDriverManager()->GetDriverByName("GTiff");
-        if (!driver) {
-            std::cerr << "Can't initalize GDAL GTiff driver.\n";
+        GDALDriver* driver_mem = GetGDALDriverManager()->GetDriverByName("MEM");
+        if (!driver_mem) {
+            std::cerr << "Can't initalize GDAL MEM driver.\n";
             std::exit(return_code::fatal);
         }
 
-        std::vector<std::string> options;
-        options.push_back("COMPRESS=" + m_options.compression_format);
-        options.push_back("TILED=YES");
-
-        auto dataset_options = std::unique_ptr<char*[]>(new char*[options.size()+1]);
-        std::transform(options.begin(), options.end(), dataset_options.get(), [&](const std::string& s) {
-            return const_cast<char*>(s.data());
-        });
-        dataset_options[options.size()] = nullptr;
-
-        GDALDataset* dataset = driver->Create(m_options.output_filename.c_str(), m_width, m_height, 1, GDT_UInt32, dataset_options.get());
+        GDALDataset* dataset = driver_mem->Create("", m_width, m_height, 1, IMAGE_TYPE, nullptr);
         if (!dataset) {
             std::cerr << "Can't create output file '" << m_options.output_filename <<"'.\n";
             std::exit(return_code::error);
         }
-
-        dataset->SetMetadataItem("TIFFTAG_IMAGEDESCRIPTION", "OpenStreetMap node density");
-        dataset->SetMetadataItem("TIFFTAG_COPYRIGHT", "Copyright OpenStreetMap contributors (https://www.openstreetmap.org/copyright), License: CC-BY-SA (https://creativecommons.org/licenses/by-sa/2.0/)");
-        dataset->SetMetadataItem("TIFFTAG_SOFTWARE", "node_density");
 
         double geo_transform[6] = {m_bottom_left.x, 1/m_factor_x, 0, m_top_right.y, 0, 1/m_factor_y};
         dataset->SetGeoTransform(geo_transform);
@@ -119,20 +117,52 @@ public:
             CPLFree(wkt);
         }
 
-        GDALRasterBand* band = dataset->GetRasterBand(1);
+        GDALDriver* driver_cog = GetGDALDriverManager()->GetDriverByName("COG");
+        if (!driver_cog) {
+            std::cerr << "Can't initalize GDAL COG driver.\n";
+            std::exit(return_code::fatal);
+        }
+
+        std::vector<std::string> options;
+        options.push_back("COMPRESS=" + m_options.compression_format);
+        options.push_back("NUM_THREADS=ALL_CPUS");
+
+        auto dataset_options = std::unique_ptr<char*[]>(new char*[options.size()+1]);
+        std::transform(options.begin(), options.end(), dataset_options.get(), [&](const std::string& s) {
+            return const_cast<char*>(s.data());
+        });
+        dataset_options[options.size()] = nullptr;
+
+        GDALDataset* dataset_cog = driver_cog->CreateCopy(m_options.output_filename.c_str(), dataset, 0, dataset_options.get(), nullptr, nullptr);
+        if (!dataset) {
+            std::cerr << "Can't create output file '" << m_options.output_filename <<"'.\n";
+            std::exit(return_code::error);
+        }
+
+        dataset_cog->SetMetadataItem("TIFFTAG_IMAGEDESCRIPTION", "OpenStreetMap node density");
+        dataset_cog->SetMetadataItem("TIFFTAG_COPYRIGHT", "Copyright OpenStreetMap contributors (https://www.openstreetmap.org/copyright), License: CC-BY-SA (https://creativecommons.org/licenses/by-sa/2.0/)");
+        dataset_cog->SetMetadataItem("TIFFTAG_SOFTWARE", "node_density");
+
+        GDALRasterBand* band = dataset_cog->GetRasterBand(1);
         assert(band);
-        if (band->RasterIO(GF_Write, 0, 0, m_width, m_height, m_node_count.get(), m_width, m_height, GDT_UInt32, 0, 0) != CE_None) {
+        if (band->RasterIO(GF_Write, 0, 0, m_width, m_height, m_node_count.get(), m_width, m_height, IMAGE_TYPE, 0, 0) != CE_None) {
             std::cerr << "Error writing to output file '" << m_options.output_filename <<"'.\n";
             std::exit(return_code::error);
         }
 
-        if (m_options.build_overview) {
+        m_node_count.reset();
+
+        m_options.vout << "Building overview...\n";
+        {
             int num = std::log2(m_width / 256.0);
             num = std::min(num, 8);
-            int overview_list[] = { 2, 4, 8, 16, 32, 64, 128, 256 };
-            dataset->BuildOverviews("AVERAGE", num, overview_list, 0, nullptr, nullptr, nullptr);
+            int const overview_list[] = { 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024 };
+            dataset_cog->BuildOverviews("AVERAGE", num, overview_list, 0, nullptr, nullptr, nullptr);
         }
 
+        m_options.vout << "Closing...\n";
+
+        GDALClose(dataset_cog);
         GDALClose(dataset);
     }
 
@@ -172,6 +202,11 @@ int main(int argc, char* argv[]) {
     options.vout << "  Bounding box:             " << options.box << "\n";
     options.vout << "  Compression:              " << options.compression_format << "\n";
     options.vout << "  Build overviews:          " << (options.build_overview ? "yes" : "no") << "\n";
+
+    options.vout << "Will need "
+                 << (options.width * options.height * sizeof(node_count_type) /
+                     (1024UL * 1024UL))
+                 << " MByte RAM for counters.\n";
 
     NodeDensityHandler handler{options};
 
