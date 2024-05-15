@@ -24,8 +24,8 @@ struct Options {
     std::string input_format;
     std::string compression_format{"LZW"};
     bool build_overview = false;
-    size_t width = 1024;
-    size_t height = 512;
+    std::size_t width = 1024;
+    std::size_t height = 1024;
     osmium::Box box{-180, -90, 180, 90};
 
     Options(int argc, char* argv[]);

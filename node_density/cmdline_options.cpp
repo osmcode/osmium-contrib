@@ -17,7 +17,6 @@ Options::Options(int argc, char* argv[]) {
             ("quiet,q", "Suppress verbose output messages")
             ("format,f", po::value<std::string>(), "Format of input file (default: autodetect)")
             ("output,o", po::value<std::string>(), "Name of output image")
-            ("epsg,e", po::value<int>(), "EPSG code of spatial reference system (default: 4326)")
             ("width,W", po::value<size_t>(), "Pixel width of output image")
             ("height,H", po::value<size_t>(), "Pixel height of output image")
             ("left,x", po::value<double>(), "Left edge of bounding box (default: -180)")
