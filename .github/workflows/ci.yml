@@ -8,15 +8,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        name: [Ubuntu-18, Ubuntu-20, Ubuntu-22, Debian-10, Debian-11, Debian-12, Debian-Testing, Debian-Experimental, Fedora-35, Fedora-36, Fedora-37, Fedora-38]
+        name: [Ubuntu-20, Ubuntu-22, Ubuntu-24, Debian-10, Debian-11, Debian-12, Debian-Testing, Debian-Experimental, Fedora-38, Fedora-39, Fedora-40]
         build_type: [Dev]
         cpp_compiler: [g++]
         cpp_version: [c++11]
         include:
-          - name: Ubuntu-18
-            # Uses gcc 7.5.0, clang 6.0.0, cmake 3.10.2
-            image: "ubuntu:18.04"
-            ubuntu: 18
           - name: Ubuntu-20
             # Uses gcc 9.3.0, clang 10.0.0, cmake 3.16.3
             image: "ubuntu:20.04"
@@ -25,6 +21,10 @@ jobs:
             # Uses gcc 12.2.0, clang 15.0.7, cmake 3.24.2
             image: "ubuntu:22.04"
             ubuntu: 22
+            CXXFLAGS: -Wno-stringop-overread
+          - name: Ubuntu-24
+            image: "ubuntu:24.04"
+            ubuntu: 24
             CXXFLAGS: -Wno-stringop-overread
           - name: Debian-10
             # Uses gcc 8.3.0, clang 7.0.1, cmake 3.13.4
@@ -111,21 +111,15 @@ jobs:
             image: "debian:experimental"
             c_compiler: clang
             cpp_compiler: clang++
-          - name: Fedora-35
-            # Uses gcc 11.2.1, clang 12.0.1, cmake 3.20.5
-            image: "fedora:35"
-            CXXFLAGS: -Wno-stringop-overread
-          - name: Fedora-36
-            # Uses gcc 12.2.0, clang 14.0.5, cmake 3.24.2
-            image: "fedora:36"
-            CXXFLAGS: -Wno-stringop-overread
-          - name: Fedora-37
-            # Uses gcc 12.3.1, clang 15.0.7, cmake 3.26.4
-            image: "fedora:37"
-            CXXFLAGS: -Wno-stringop-overread
           - name: Fedora-38
             # Uses gcc 13.0.1, clang 16.0.5, cmake 3.26.4
             image: "fedora:38"
+            CXXFLAGS: -Wno-stringop-overread
+          - name: Fedora-39
+            image: "fedora:39"
+            CXXFLAGS: -Wno-stringop-overread
+          - name: Fedora-40
+            image: "fedora:40"
             CXXFLAGS: -Wno-stringop-overread
     container:
       image: ${{ matrix.image }}
@@ -180,7 +174,7 @@ jobs:
               make \
               proj-devel \
               zlib-devel
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/install-from-git
       - uses: ./.github/actions/cmake
       - uses: ./.github/actions/build
@@ -200,7 +194,7 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -yq clang-15
         shell: bash
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/install-ubuntu
       - uses: ./.github/actions/install-from-git
       - uses: ./.github/actions/cmake
@@ -213,9 +207,9 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - "macos-11"
           - "macos-12"
           - "macos-13"
+          - "macos-14"
         build_type: [Dev]
         include:
           - os: "macos-12"
@@ -227,7 +221,7 @@ jobs:
       CXXFLAGS: -std=c++14
       BUILD_TYPE: ${{ matrix.build_type }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/install-macos
       - uses: ./.github/actions/install-from-git
       - uses: ./.github/actions/cmake
