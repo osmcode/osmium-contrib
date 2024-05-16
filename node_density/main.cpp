@@ -156,7 +156,7 @@ public:
         {
             int num = std::log2(m_width / 256.0);
             num = std::min(num, 8);
-            int const overview_list[] = { 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024 };
+            int overview_list[] = { 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024 };
             dataset_cog->BuildOverviews("AVERAGE", num, overview_list, 0, nullptr, nullptr, nullptr);
         }
 
