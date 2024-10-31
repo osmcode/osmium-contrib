@@ -10,6 +10,7 @@ runs:
              libboost-dev \
              libboost-filesystem-dev \
              libboost-program-options-dev \
+             libbz2-dev \
              libgdal-dev \
              libproj-dev \
              libsparsehash-dev
