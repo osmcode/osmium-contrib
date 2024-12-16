@@ -6,7 +6,7 @@ to work with the Osmium library.
 
 You have to set up [Libosmium](https://osmcode.org/libosmium) first.
 
-[![Build Status](https://github.com/osmcode/osmium-contrib/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/osmcode/osmium-contrib/actions)
+[![Build Status](https://github.com/osmcode/osmium-contrib/actions/workflows/ci.yml/badge.svg)](https://github.com/osmcode/osmium-contrib/actions)
 
 
 ## Building
