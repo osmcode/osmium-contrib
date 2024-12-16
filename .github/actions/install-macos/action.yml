@@ -1,10 +1,12 @@
-name: Install Prerequisites on macOS
+name: Install homebrew packages on macOS
 
 runs:
   using: composite
   steps:
     - name: Install homebrew packages
       run: |
-        brew install boost gdal
+        brew install \
+          boost \
+          gdal
       shell: bash
 
