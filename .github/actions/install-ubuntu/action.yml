@@ -11,8 +11,5 @@ runs:
              libboost-filesystem-dev \
              libboost-program-options-dev \
              libbz2-dev \
-             libgdal-dev \
-             libproj-dev \
-             libsparsehash-dev
+             libgdal-dev
       shell: bash
-

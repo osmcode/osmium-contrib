@@ -9,4 +9,3 @@ runs:
           boost \
           gdal
       shell: bash
-
