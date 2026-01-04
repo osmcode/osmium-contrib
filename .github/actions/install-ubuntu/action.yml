@@ -8,7 +8,6 @@ runs:
         sudo apt-get update -qq
         sudo apt-get install -yq \
              libboost-dev \
-             libboost-filesystem-dev \
              libboost-program-options-dev \
              libbz2-dev \
              libgdal-dev

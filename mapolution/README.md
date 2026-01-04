@@ -10,10 +10,8 @@ You'll need:
 * [Libosmium](https://osmcode.org/libosmium) and its dependencies.
 * [GDAL](https://gdal.org/) library, more specifically the `gdal_rasterize`
   command. (On Debian/Ubuntu install `libgdal-dev` and `gdal-bin` packages.)
-* `boost_filesystem` and `boost_program_options`
-  (https://boost.org/) version 1.48 or later.
-  (On Debian/Ubuntu install `libboost-filesystem-dev`
-  and `libboost-program-options-dev` packages.)
+* `boost_program_options` (https://boost.org/) version 1.48 or later.
+  (On Debian/Ubuntu install `libboost-program-options-dev` package.)
 * gifsicle (On Debian/Ubuntu install `gifsicle`).
 * [Imagemagick](https://www.imagemagick.org/)
   (On Debian/Ubuntu install `imagemagick`).

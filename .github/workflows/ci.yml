@@ -145,7 +145,6 @@ jobs:
             g++ \
             git \
             libboost-dev \
-            libboost-filesystem-dev \
             libboost-program-options-dev \
             libbz2-dev \
             libexpat1-dev \

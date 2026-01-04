@@ -2,9 +2,8 @@
 // The code in this file is released into the Public Domain.
 
 #include <numeric>
+#include <filesystem>
 #include <fstream>
-
-#include <boost/filesystem.hpp>
 
 #include <osmium/area/assembler_legacy.hpp>
 #include <osmium/area/multipolygon_manager_legacy.hpp>
@@ -129,11 +128,11 @@ tspair min_max_timestamp(TIter begin, TIter end) {
 }
 
 void check_and_create_directory(const std::string& directory) {
-    boost::filesystem::path dir{directory};
+    std::filesystem::path dir{directory};
 
     try {
-        boost::filesystem::create_directories(dir);
-    } catch (const boost::filesystem::filesystem_error& e) {
+        std::filesystem::create_directories(dir);
+    } catch (const std::filesystem::filesystem_error& e) {
         std::cerr << "Error creating output directory '"
                   << directory
                   << "': "
@@ -142,8 +141,8 @@ void check_and_create_directory(const std::string& directory) {
         std::exit(return_code::fatal);
     }
 
-    const int num_entries = std::distance(boost::filesystem::directory_iterator(dir),
-                                          boost::filesystem::directory_iterator());
+    const int num_entries = std::distance(std::filesystem::directory_iterator(dir),
+                                          std::filesystem::directory_iterator());
 
     if (num_entries != 0) {
         std::cerr << "Output directory '" << directory << "' is not empty.\n";
