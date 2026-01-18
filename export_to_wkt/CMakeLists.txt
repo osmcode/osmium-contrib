@@ -21,6 +21,10 @@ include_directories(SYSTEM ${OSMIUM_INCLUDE_DIRS})
 
 include(common)
 
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    add_definitions(-Wno-stringop-overread)
+endif()
+
 enable_testing()
 
 #----------------------------------------------------------------------
